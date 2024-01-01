@@ -18,9 +18,9 @@ struct HelloView: View {
                 P("Lorem ipsum dolor sit")
                 
                 Ul {
-                    Li("Item 1")
-                    Li("Item 2")
-                    Li("Item 3")
+                    for i in 0..<10  {
+                        Li("Item \(i)")
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ enum Entrypoint {
     
     static func main() async throws {
         let app = HBApplication(configuration: .init(address: .hostname("127.0.0.1", port: 8080)))
+        app.decoder = AppDecoder()
         app.router.get("hello") { request -> String in
             return "Now"
         }
@@ -21,6 +22,8 @@ enum Entrypoint {
                 title: "Hello from example"
             )
         }
+        app.router.post("login", use: AuthController.index)
+        app.router.get("register", use: AuthController.register)
         
         try await app.asyncRun()
     }
