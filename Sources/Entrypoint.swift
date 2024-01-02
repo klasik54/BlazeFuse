@@ -28,6 +28,8 @@ enum Entrypoint {
         ), as: .psql)
         
         try await app.fluent.migrate()
+
+        app.middleware.add(FileMiddleware())
         
         app.router.get("hello") { request -> String in
             return "Now"
