@@ -13,17 +13,20 @@ import FluentPostgresDriver
 enum Entrypoint {
     
     static func main() async throws {
-        let app = HBApplication(configuration: .init(address: .hostname("127.0.0.1", port: 8080)))
+        let app = HBApplication(configuration: .init(address: .hostname(
+            env("SERVER_HOST", defaultValue: "127.0.0.1"),
+            port: env("SERVER_PORT", defaultValue: 8080)
+        )))
         app.decoder = AppDecoder()
         app.addFluent()
         app.fluent.migrations.add(CreateTodoMigration())
         
         app.fluent.databases.use(DatabaseConfigurationFactory.postgres(configuration: .init(
-            hostname: "localhost",
-            port: 5432,
-            username: "postgres",
-            password: "",
-            database: "blaze",
+            hostname: env("DB_HOST", defaultValue: "localhost"),
+            port: env("DB_PORT", defaultValue: 5432),
+            username: env("DB_USERNAME", defaultValue: ""),
+            password: env("DB_PASSWORD", defaultValue: ""),
+            database: env("DB_DATABASE", defaultValue: ""),
             tls: .prefer(try .init(configuration: .clientDefault)))
         ), as: .psql)
         
