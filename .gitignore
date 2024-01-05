@@ -16,6 +16,7 @@ node_modules
 
 # Vite
 Public/build
+Public/Storage
 
 # Logs
 logs

@@ -140,5 +140,18 @@ final class Storage {
         let absolutePath = storagePath + path
         return try fileManager.attributesOfItem(atPath: absolutePath)
     }
+    
+    /// Get url of file
+    /// - Parameters:
+    ///  - path: Path to file
+    /// - Returns: URL of file
+    func url(path: String) -> URL? {
+        guard exists(path: path) else {
+            return nil
+        }
+        let appURL = env("APP_URL", defaultValue: "")
+        
+        return URL(string: appURL + "/storage/" + path)
+    }
 
 }

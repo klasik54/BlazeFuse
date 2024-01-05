@@ -51,6 +51,14 @@ enum Entrypoint {
             return "File uploaded: \(result)"
         }
         
+        app.router.get("fileUrl") { request in
+            guard let fileName = request.uri.queryParameters.get("fileName") else {
+                throw HBHTTPError(.badRequest)
+            }
+
+            return Storage.shared.url(path: fileName)?.absoluteString
+        }
+        
         app.router.get("example") { request in
             return HelloView(
                 title: "Hello from example"
