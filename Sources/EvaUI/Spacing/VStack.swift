@@ -16,24 +16,24 @@ enum HorizontalAlignment: String {
     
 }
 
-struct VStack: View {
-    
-    let spacing: Int
-    let alignment: HorizontalAlignment
-    
-    let content: Tag
-    
-    init(spacing: Int = 16, alignment: HorizontalAlignment = .center, @TagBuilder content: () -> Tag) {
-        self.spacing = spacing
-        self.alignment = alignment
-        self.content = content()
-    }
-    
-    var body: Tag {
-        Div {
-            content
-        }
-        .class(add: "flex flex-col gap-[\(spacing)px] items-\(alignment.rawValue)")
-    }
-    
-}
+//struct VStack: View {
+//    
+//    let spacing: Int
+//    let alignment: HorizontalAlignment
+//    
+//    let content: Tag
+//    
+//    init(spacing: Int = 16, alignment: HorizontalAlignment = .center, @TagBuilder content: () -> Tag) {
+//        self.spacing = spacing
+//        self.alignment = alignment
+//        self.content = content()
+//    }
+//    
+//    var body: Tag {
+//        Div {
+//            content
+//        }
+//        .class(add: "flex flex-col gap-[\(spacing)px] items-\(alignment.rawValue)")
+//    }
+//    
+//}
