@@ -37,9 +37,7 @@ final class FileMiddleware: HBAsyncMiddleware {
         }
         
         if isDir.boolValue {
-            guard absPath.hasSuffix("/") else {
-                return try await next.respond(to: request)
-            }
+            return try await next.respond(to: request)
         }
         
         let file = try Data(contentsOf: URL(filePath: absPath))

@@ -34,6 +34,10 @@ enum Entrypoint {
 
         app.middleware.add(FileMiddleware())
         
+        app.router.get("") { request in
+            return HelloView(title: "")
+        }
+        
         app.router.get("hello") { request -> String in
             return "Now"
         }
