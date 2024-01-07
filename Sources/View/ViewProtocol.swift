@@ -271,13 +271,16 @@ class ViewRenderer {
         print("Body", type(of: view.body))
         var classList = classList
         let mirror = Mirror(reflecting: view)
-        mirror.children.forEach {
-            if let aa = $0.value as? ViewModifier {
-                print("Class", aa.className)
-                classList.append(aa.className)
+        
+        for child in mirror.children {
+            if let viewModifier = child.value as? ViewModifier {
+                classList.append(viewModifier.className)
+                if let tag = viewModifier.tag {
+                    return tag
+                        .class(add: classList.joined(separator: " "))
+                }
             }
         }
-        
         
         if let view = view as? Tagable {
             return view.tag
@@ -295,6 +298,7 @@ class ViewRenderer {
 protocol ViewModifier {
     
     var className: String { get }
+    var tag: Tag? { get }
     
 }
 
@@ -324,7 +328,7 @@ extension MyView {
     }
     
     func padding(_ padding: Float) -> some MyView {
-        return ModifiedContent(content: self, modifier: PaddingModifier(padding: padding))
+        return ModifiedContent(content: self, modifier: PaddingModifier(padding: padding, content: self))
     }
     
     func backgoundColor(_ color: Color) -> some MyView {
@@ -340,6 +344,7 @@ struct ForegroundColorModifier: ViewModifier {
     var className: String {
         "text-\(color.className)"
     }
+    var tag: Tag? = nil
     
 }
 
@@ -347,9 +352,17 @@ struct PaddingModifier: ViewModifier {
     
     let padding: Float
     
+    init(padding: Float, content: MyView) {
+        self.padding = padding
+        self.tag = Div {
+            ViewRenderer().tagFrom(view: content)
+        }
+    }
+    
     var className: String {
         "p-[\(padding)px]"
     }
+    var tag: Tag?
     
 }
 
@@ -359,10 +372,9 @@ struct BackgroundColorModifier: ViewModifier {
     var className: String {
         "bg-\(color.className)"
     }
+    var tag: Tag? = nil
     
 }
-
-
 
 
 extension ModifiedContent: HBResponseGenerator where Content: MyView, Modifier: ViewModifier {
@@ -381,30 +393,14 @@ extension ModifiedContent: MyView where Content: MyView, Modifier: ViewModifier 
     
 }
 
-//extension ModifiedContent: Tagable where Content: MyView & Tagable, Modifier: ViewModifier {
-//    
-//    var tag: Tag {
-//        content.tag
-//    }
-//    
-//}
-
 struct MyHelloView: MyView {
     
     var body: MyView {
         Text(text: "Hello")
+            .foregroundColor(.cyan600)
+            .backgoundColor(.red700)
             .padding(10)
-            .foregroundColor(.red700)
-            .backgoundColor(.blue500)
-
-//        Group {
-//            TitleView(title: "My title")
-//            if Bool.random() {
-//                Text(text: "true")
-//            } else {
-//                Text(text: "false")
-//            }
-//        }
+            .backgoundColor(.blue600)
     }
     
 }
