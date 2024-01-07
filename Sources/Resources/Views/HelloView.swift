@@ -11,51 +11,23 @@ struct HelloView: View {
     
     let title: String
     
-    var body: Tag {
-        Html {
-            Head {
-                Script()
-                    .src("https://cdn.tailwindcss.com")
-            }
-        }
-        Body {
-            Main {
-                H1(title)
-//                VStack {
-//                    P("Lorem ipsum dolor sit")
-//                        .font(.title)
-//                        .foregroundColor(.red700)
-//                        .background(.green700)
-//                        .padding(.vertical, 4)
-//                        .margin(.horizontal, 4)
-//                        .rounded()
-//                    
-//                }
-                P("Lorem ipsum dolor sit")
-                    .font(.title)
-                    .foregroundColor(.red700)
-                    .background(.green700)
-                    .padding(.vertical, 4)
-                    .margin(.horizontal, 4)
-                    .rounded()
-                
-                P("Hello")
-                    .background(.green50)
-                
-                Ul {
-                    for i in 0..<10  {
-                        Li("Item \(i)")
-                    }
-                }
-            }
-            .padding(20)
-        }
+    var body: some View {
+        Text(title)
+            .font(.extraLargeTitle2)
+            .backgoundColor(.green700)
+            .foregroundColor(.red700)
+            .padding(30)
+            .backgoundColor(.blue700)
+        
+        Text(title)
+            .fontFamily(.serif)
+            .backgoundColor(.blue300)
+            .foregroundColor(.red700)
+            .padding(30)
+            .backgoundColor(.yellow700)
     }
     
 }
-
-
-
 
 struct RadiusSize {
     
@@ -66,21 +38,5 @@ struct RadiusSize {
     static let full = RadiusSize(className: "full")
     
     let className: String
-    
-}
-
-extension Tag {
-    
-    func rounded(_ corners: Corner = .all, _ radius: RadiusSize = .md) -> Tag {
-        self.class(add: "rounded-\(radius.className)")
-    }
-    
-    func foregroundColor(_ color: Color) -> Tag {
-        self.class(add: "text-\(color.className)")
-    }
-    
-    func background(_ color: Color) -> Tag {
-        self.class(add: "bg-\(color.className)")
-    }
     
 }

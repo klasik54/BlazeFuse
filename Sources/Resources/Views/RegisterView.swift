@@ -9,21 +9,8 @@ import SwiftHtml
 
 struct RegisterView: View {
     
-    var body: Tag {
-        Body {
-            Form {
-                Input()
-                    .name("username")
-                    .placeholder("Username")
-                
-                Input()
-                    .name("password")
-                    .type(.password)
-                    .placeholder("Password")
-
-                Button("Register")
-            }
-        }
+    var body: some View {
+        Text("Regiter")
     }
     
 }
