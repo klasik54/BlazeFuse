@@ -157,7 +157,7 @@ protocol MyView: HBResponseGenerator {
 
 extension MyView {
     
-    func response(from request: HBRequest) throws -> HBResponse {
+    public func response(from request: HBRequest) throws -> HBResponse {
         let viewRenderer = ViewRenderer()
         
         let html = viewRenderer.render(self)
@@ -184,7 +184,6 @@ struct EmptyView: MyView, Tagable {
     
     var body: MyView {
         self
-        // Text(text: "Hello")
     }
     
     var tag: Tag {
@@ -199,22 +198,28 @@ struct Text: MyView, Tagable {
     
     let text: String
     
+    private init(text: String, tag: Tag) {
+        self.text = text
+        self.tag = tag
+    }
+    
+    init(text: String) {
+        self.text = text
+        self.tag = P(text)
+    }
+    
     var body: MyView {
         self
     }
     
-    var tag: Tag {
-        P(text)
-    }
+    var tag: Tag
     
 }
 
 extension Text {
     
     func fontWeight(_ weight: FontWeight) -> Text {
-        tag.fontWeight(weight)
-
-        return self
+        return Text(text: text, tag: tag.fontWeight(weight))
     }
     
 }
@@ -261,28 +266,145 @@ class ViewRenderer {
         return html
     }
     
-    func tagFrom(view: MyView) -> Tag {
-        print("Tag from \(type(of: view.self))")
-        if let view = view as? Tagable {
-            return view.tag
+    func tagFrom<T: MyView>(view: T, classList: [String] = []) -> Tag {
+        print("View", type(of: view))
+        print("Body", type(of: view.body))
+        var classList = classList
+        let mirror = Mirror(reflecting: view)
+        mirror.children.forEach {
+            if let aa = $0.value as? ViewModifier {
+                print("Class", aa.className)
+                classList.append(aa.className)
+            }
         }
         
-        return tagFrom(view: view.body)
+        
+        if let view = view as? Tagable {
+            return view.tag
+                .class(add: classList.joined(separator: " "))
+        }
+      
+        return tagFrom(view: view.body, classList: classList)
     }
     
 }
 
+
+
+
+protocol ViewModifier {
+    
+    var className: String { get }
+    
+}
+
+struct ModifiedContent<Content, Modifier> {
+    
+    let content: Content
+    let modifier: Modifier
+    
+//    var body: MyView {
+//        content.body
+//    }
+    
+}
+
+extension Never: MyView {
+    
+    var body: MyView {
+        fatalError()
+    }
+    
+}
+
+extension MyView {
+    
+    func foregroundColor(_ color: Color) -> some MyView {
+        return ModifiedContent(content: self, modifier: ForegroundColorModifier(color: color))
+    }
+    
+    func padding(_ padding: Float) -> some MyView {
+        return ModifiedContent(content: self, modifier: PaddingModifier(padding: padding))
+    }
+    
+    func backgoundColor(_ color: Color) -> some MyView {
+        return ModifiedContent(content: self, modifier: BackgroundColorModifier(color: color))
+    }
+    
+}
+
+
+struct ForegroundColorModifier: ViewModifier {
+    
+    let color: Color
+    var className: String {
+        "text-\(color.className)"
+    }
+    
+}
+
+struct PaddingModifier: ViewModifier {
+    
+    let padding: Float
+    
+    var className: String {
+        "p-[\(padding)px]"
+    }
+    
+}
+
+struct BackgroundColorModifier: ViewModifier {
+    
+    let color: Color
+    var className: String {
+        "bg-\(color.className)"
+    }
+    
+}
+
+
+
+
+extension ModifiedContent: HBResponseGenerator where Content: MyView, Modifier: ViewModifier {
+    
+    func response(from request: HBRequest) throws -> HBResponse {
+        return try content.response(from: request)
+    }
+
+}
+
+extension ModifiedContent: MyView where Content: MyView, Modifier: ViewModifier {
+    
+    var body: MyView {
+        content
+    }
+    
+}
+
+//extension ModifiedContent: Tagable where Content: MyView & Tagable, Modifier: ViewModifier {
+//    
+//    var tag: Tag {
+//        content.tag
+//    }
+//    
+//}
+
 struct MyHelloView: MyView {
     
     var body: MyView {
-        Group {
-            TitleView(title: "My title")
-            if Bool.random() {
-                Text(text: "true")
-            } else {
-                Text(text: "false")
-            }
-        }
+        Text(text: "Hello")
+            .padding(10)
+            .foregroundColor(.red700)
+            .backgoundColor(.blue500)
+
+//        Group {
+//            TitleView(title: "My title")
+//            if Bool.random() {
+//                Text(text: "true")
+//            } else {
+//                Text(text: "false")
+//            }
+//        }
     }
     
 }
@@ -294,6 +416,8 @@ struct TitleView: MyView {
     var body: MyView {
         Text(text: title)
             .fontWeight(.bold)
+            .foregroundColor(.red50)
+            .padding(10)
     }
     
 }
