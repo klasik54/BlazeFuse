@@ -11,6 +11,7 @@ struct HelloView: View {
     
     let title: String
     
+    
     var body: some View {
         Text(title)
             .font(.extraLargeTitle2)
@@ -25,6 +26,37 @@ struct HelloView: View {
             .foregroundColor(.red700)
             .padding(30)
             .backgoundColor(.yellow700)
+        
+        Text(#file)
+        Text(#function)
+        
+        Button(file: "dsad", line: 23) {
+            print("Hy ho")
+        } label: {
+            Text("Click me")
+        }
+        Button(file: "dsad", line: 23) {
+            print("Hy ho")
+        } label: {
+            Text("Click me")
+        }
+        Button(file: "dsad", line: 23) {
+            print("Hy ho")
+        } label: {
+            Text("Click me")
+        }
+        
+        Button {
+            print("Hy ho")
+        } label: {
+            Text("Click me")
+        }
+        
+        Button {
+            print("Hy ho")
+        } label: {
+            Text("Heheh me")
+        }
     }
     
 }

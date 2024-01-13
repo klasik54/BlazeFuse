@@ -16,6 +16,11 @@ class ViewRenderer {
                 Head {
                     Script()
                         .src("https://cdn.tailwindcss.com")
+                    
+                    Script()
+                        .src("https://unpkg.com/htmx.org@1.9.10")
+                        .integrity("sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC")
+                        .crossorigin(.anonymous)
                 }
                 
                 Body {
@@ -30,8 +35,8 @@ class ViewRenderer {
     }
     
     func tagFrom<T: View>(view: T, classList: [String] = []) -> Tag {
-        print("View", type(of: view))
-        print("Body", type(of: view.body))
+//        print("View", type(of: view))
+//        print("Body", type(of: view.body))
         var classList = classList
         let mirror = Mirror(reflecting: view)
         
