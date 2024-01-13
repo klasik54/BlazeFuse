@@ -35,10 +35,16 @@ class ViewRenderer {
     }
     
     func tagFrom<T: View>(view: T, classList: [String] = []) -> Tag {
-//        print("View", type(of: view))
-//        print("Body", type(of: view.body))
         var classList = classList
         let mirror = Mirror(reflecting: view)
+        if let stateFullView = view as? any StateFullView {
+            StateFullViewRepository.shared.registerStateFullView(view: stateFullView)
+        }
+        let view = if let stateFullView = view as? any StateFullView {
+            stateFullView.wrapper
+        } else {
+            view
+        }
         
         for child in mirror.children {
             if let viewModifier = child.value as? ViewModifier {

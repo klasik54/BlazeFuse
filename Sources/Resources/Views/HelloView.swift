@@ -7,56 +7,93 @@
 
 import SwiftHtml
 
-struct HelloView: View {
+struct HelloView: StateFullView {
+ 
+    var props: Props
+    @State var state = Data()
     
-    let title: String
+    struct Props: Codable {
+        
+        let title: String
+        
+    }
+    struct Data: Codable {
+        var count: Int = 0
+    }
     
+    init(props: Props) {
+        self.props = props
+    }
     
     var body: some View {
-        Text(title)
+        Text(props.title)
             .font(.extraLargeTitle2)
             .backgoundColor(.green700)
             .foregroundColor(.red700)
             .padding(30)
             .backgoundColor(.blue700)
         
-        Text(title)
+        Text(props.title)
             .fontFamily(.serif)
             .backgoundColor(.blue300)
             .foregroundColor(.red700)
             .padding(30)
             .backgoundColor(.yellow700)
         
-        Text(#file)
-        Text(#function)
+        Text(state.count.description)
         
-        Button(file: "dsad", line: 23) {
-            print("Hy ho")
+
+        Button {
+            print("Decrementing")
+            state.count -= 1
         } label: {
-            Text("Click me")
-        }
-        Button(file: "dsad", line: 23) {
-            print("Hy ho")
-        } label: {
-            Text("Click me")
-        }
-        Button(file: "dsad", line: 23) {
-            print("Hy ho")
-        } label: {
-            Text("Click me")
+            Text("Decrement")
         }
         
         Button {
-            print("Hy ho")
+            print("Incrementing")
+            state.count += 1
+            
         } label: {
-            Text("Click me")
+            Text("Increment")
         }
-        
-        Button {
-            print("Hy ho")
-        } label: {
-            Text("Heheh me")
+    }
+    
+}
+
+import Foundation
+
+struct ViewWrapper<Content: View>: View, Tagable {
+    
+    let id: String
+    let view: Content
+    let jsonData: String
+    
+    init(
+        id: String,
+        jsonData: String,
+        @ViewBuilder view: () -> Content
+    ) {
+        self.id = id
+        self.jsonData = jsonData
+        self.view = view()
+    }
+    
+    var body: some View {
+        self
+    }
+    
+    var tag: Tag {
+        Div {
+            Input()
+                .name("data")
+                .type(.hidden)
+                .value(jsonData)
+
+            ViewRenderer().tagFrom(view: view)
         }
+        .id(id)
+        .class("component")
     }
     
 }

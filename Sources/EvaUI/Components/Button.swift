@@ -26,7 +26,7 @@ struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
         hasher.combine(file)
         hasher.combine(line)
         
-        self.id = "1" // hasher.finalize().description
+        self.id = hasher.finalize().description
         self.label = label()
         self.action = action
     }
@@ -39,7 +39,9 @@ struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
         SwiftHtml.Button {
             ViewRenderer().tagFrom(view: label)
         }
-        .attribute("hx-post", "/__click?component=\(id)")
+        .attribute("hx-post", "/eva?triggerId=\(id)")
+        .attribute("hx-include", "[name='data']")
+        .attribute("hx-target", ".component")
         .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
     }
     

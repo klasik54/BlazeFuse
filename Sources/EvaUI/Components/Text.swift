@@ -23,7 +23,7 @@ struct Text: View, Tagable {
     }
     
     var body: some View {
-        self
+        NeverView()
     }
     
     var tag: Tag
@@ -46,6 +46,14 @@ extension Text {
     
     func fontFamily(_ family: FontFamily) -> Text {
         return Text(text: text, tag: tag.fontFamily(family))
+    }
+    
+}
+
+struct NeverView: View {
+    
+    var body: some View {
+        EmptyView()
     }
     
 }

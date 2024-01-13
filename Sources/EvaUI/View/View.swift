@@ -37,6 +37,10 @@ extension View {
 
 extension Never: View {
     
+    init() {
+        fatalError()
+    }
+    
     var body: some View {
         fatalError()
     }
