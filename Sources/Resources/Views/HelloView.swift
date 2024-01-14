@@ -61,8 +61,6 @@ struct HelloView: StatefulView {
     
 }
 
-
-
 struct RadiusSize {
     
     static let sm = RadiusSize(className: "sm")

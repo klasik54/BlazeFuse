@@ -47,13 +47,17 @@ extension StatefulView {
     
 }
 
-
-func findView(by id: String, from view: some View) -> ((any View)?) {
+func findView(by id: String, from view: some View) -> (any View)? {
     if let identifiableView = view as? any Identifiable<String>, identifiableView.id == id {
-        print("Returning: \(type(of: view))")
         return view
     } else if let taggableView = view as? Tagable {
-        return taggableView.children.first(where: { findView(by: id, from: $0) != nil  })
+        for view in taggableView.children {
+            if let foundView = findView(by: id, from: view) {
+                return foundView
+            }
+        }
+        
+        return nil
     } else {
         return findView(by: id, from: view.body)
     }
