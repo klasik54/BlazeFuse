@@ -25,6 +25,10 @@ struct HelloView: StatefulView {
         self.props = props
     }
     
+    var tenTimesMore: Int {
+        state.count * 10
+    }
+    
     var body: some View {
         Text(props.title)
             .font(.extraLargeTitle2)
@@ -41,7 +45,8 @@ struct HelloView: StatefulView {
             .backgoundColor(.yellow700)
         
         Text(state.count.description)
-        
+        Text("10 times more is \(tenTimesMore)")
+       
         Button {
             print("Decrementing \(state.count)")
             state.count -= 1
@@ -56,6 +61,10 @@ struct HelloView: StatefulView {
             print("Finished incrementing \(state.count)")
         } label: {
             Text("Increment")
+        }
+        
+        if state.count > 10 {
+            Text("Count is greater than 10")
         }
     }
     

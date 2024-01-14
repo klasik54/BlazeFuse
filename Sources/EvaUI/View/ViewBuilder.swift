@@ -20,6 +20,15 @@ struct ViewBuilder {
         EmptyView()
     }
     
+    /// Support for optional values
+    static func buildOptional<Content: View>(_ content: Content?) -> ConditionalContent<Content, EmptyView> {
+        if let content {
+            return ConditionalContent(trueContent: content)
+        } else {
+            return ConditionalContent(falseContent: EmptyView())
+        }
+    }
+    
     /// Passes a single view written as a child view through unmodified.
     ///
     /// An example of a single view written as a child view is
