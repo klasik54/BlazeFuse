@@ -10,19 +10,6 @@ import HummingbirdFluent
 import FluentPostgresDriver
 import Foundation
 
-struct Foo: Decodable {
-    
-    let data: String
-    
-    struct Bar: Decodable {
-        
-        let id: String
-
-    }
-    
-}
-
-
 @main
 enum Entrypoint {
     
@@ -49,47 +36,10 @@ enum Entrypoint {
         app.middleware.add(FileMiddleware())
         
         app.router.get("") { request in
-//            bb()
-            
             return HelloView(props: .init(title: "Hello Swift"))
         }
         
-        app.router.post("eva") { request in
-            let data = try request.decode(as: Foo.self)
-//            print(data.data.replacingOccurrences(of: "&quot;", with: #"""#))
-            let jsonString = data.data.replacingOccurrences(of: "&quot;", with: #"""#)
-//            print(jsonString)
-            let jsonData = jsonString.data(using: .utf8)!
-            let bar = try! JSONDecoder().decode(Foo.Bar.self, from: jsonData)
-            let triggerId = request.uri.queryParameters["triggerId"]!
-            
-            let view = StateFullViewRepository.shared.getStateFullView(by: bar.id, from: jsonData)
-            
-            let triggerView = findView(by: triggerId, from: view)
-            
-            if let triggerView {
-                print("Received: \(type(of: triggerView))")
-            }
-                  
-            if let actionable = triggerView as? Actionable {
-                actionable.action()
-            }
-            
-            
-            
-            let viewRenderer = ViewRenderer()
-            
-            let html = viewRenderer.render(view)
-            
-            
-            return HBResponse(
-                status: .ok,
-                headers: [
-                    "Content-Type": "text/html"
-                ],
-                body: .byteBuffer(ByteBuffer(string: html))
-            )
-        }
+        app.router.post("eva", use: evaUIRouteHandler)
         
         app.router.get("hello") { request -> String in
             return "Now"

@@ -19,11 +19,8 @@ protocol View: HBResponseGenerator {
 extension View {
     
     public func response(from request: HBRequest) throws -> HBResponse {
-        let viewRenderer = ViewRenderer()
-        
-        let html = viewRenderer.render(self)
-        
-        
+        let html = ViewRenderer.shared.renderPage(self)
+
         return HBResponse(
             status: .ok,
             headers: [

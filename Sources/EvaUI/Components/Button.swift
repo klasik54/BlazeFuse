@@ -8,14 +8,7 @@
 import Foundation
 import SwiftHtml
 
-protocol Actionable {
-    
-    var action: () -> Void { get }
-    
-}
-
-
-struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
+struct Button<Label: View>: View, Tagable, Identifiable, HasAction {
     
     let id: String
     let label: Label
@@ -41,47 +34,13 @@ struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
     
     var tag: Tag {
         SwiftHtml.Button {
-            ViewRenderer().tagFrom(view: label)
+            ViewRenderer.shared.tagFrom(view: label)
         }
         .attribute("hx-post", "/eva?triggerId=\(id)")
         .attribute("hx-include", "[name='data']")
         .attribute("hx-target", ".component")
+        .attribute("hx-swap", "outerHTML")
         .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
     }
     
 }
-
-//final class MethodsRepository {
-//    
-//    static let shared = MethodsRepository()
-//    
-//    private var store: [String: () -> Void] = [:] // [String: () -> Void]()
-//    
-//    private init() {}
-//    
-//    func method(for id: String) -> () -> Void {
-//        return store[id]!
-//    }
-//    
-//    func register(method: @escaping () -> Void, for id: String) {
-//        store[id] = method
-//    }
-//    
-//}
-
-
-//enum Example: Codable {
-//    
-//    case changeText(String)
-//    case changeNumber(Int)
-//    case changeQuote(Quran)
-//    
-//}
-//
-//struct Quran: Codable {
-//    
-//    let surah: String
-//    let ayah: String
-//    
-//}
-

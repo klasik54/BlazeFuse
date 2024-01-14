@@ -5,9 +5,9 @@
 //  Created by Matúš Klasovitý on 01/01/2024.
 //
 
-import SwiftHtml
+import Foundation
 
-struct HelloView: StateFullView {
+struct HelloView: StatefulView {
  
     var props: Props
     @State var state = Data()
@@ -41,8 +41,6 @@ struct HelloView: StateFullView {
             .backgoundColor(.yellow700)
         
         Text(state.count.description)
-//
-     
         
         Button {
             print("Decrementing \(state.count)")
@@ -59,52 +57,11 @@ struct HelloView: StateFullView {
         } label: {
             Text("Increment")
         }
-
-  
     }
     
 }
 
-import Foundation
 
-struct ViewWrapper<Content: View>: View, Tagable {
-    
-    let id: String
-    let view: Content
-    let jsonData: String
-    
-    init(
-        id: String,
-        jsonData: String,
-        @ViewBuilder view: () -> Content
-    ) {
-        self.id = id
-        self.jsonData = jsonData
-        self.view = view()
-    }
-    
-    var body: some View {
-        NeverView()
-    }
-    
-    var children: [any View] {
-        [view]
-    }
-    
-    var tag: Tag {
-        Div {
-            Input()
-                .name("data")
-                .type(.hidden)
-                .value(jsonData)
-
-            ViewRenderer().tagFrom(view: view)
-        }
-        .id(id)
-        .class("component")
-    }
-    
-}
 
 struct RadiusSize {
     

@@ -11,7 +11,6 @@ import SwiftHtml
 struct Group<Content: View>: View, Tagable {
     
     let content: Content
-    private let viewRenderer = ViewRenderer()
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -27,7 +26,7 @@ struct Group<Content: View>: View, Tagable {
     
     var tag: Tag {
         Div {
-            viewRenderer.tagFrom(view: content)
+            ViewRenderer.shared.tagFrom(view: content)
         }
     }
     

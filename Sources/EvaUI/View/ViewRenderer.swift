@@ -8,9 +8,13 @@
 import Foundation
 import SwiftHtml
 
-class ViewRenderer {
+final class ViewRenderer {
     
-    func render(_ view: some View) -> String {
+    static let shared = ViewRenderer()
+    
+    private init() {}
+    
+    func renderPage(_ view: some View) -> String {
         let document = Document(.html) {
             Html {
                 Head {
@@ -34,13 +38,22 @@ class ViewRenderer {
         return html
     }
     
+    func renderComponent(_ view: some View) -> String {
+        let document = Document(.html) {
+            tagFrom(view: view)
+        }
+        let html = DocumentRenderer().render(document)
+        
+        return html
+    }
+    
     func tagFrom<T: View>(view: T, classList: [String] = []) -> Tag {
         var classList = classList
         let mirror = Mirror(reflecting: view)
-        if let stateFullView = view as? any StateFullView {
-            StateFullViewRepository.shared.registerStateFullView(view: stateFullView)
+        if let stateFullView = view as? any StatefulView {
+            StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
         }
-        let view = if let stateFullView = view as? any StateFullView {
+        let view = if let stateFullView = view as? any StatefulView {
             stateFullView.wrapper
         } else {
             view

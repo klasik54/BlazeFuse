@@ -29,7 +29,7 @@ struct TupleView<T>: View, Tagable {
     var tag: Tag {
         Div {
             for child in children {
-                ViewRenderer().tagFrom(view: child)
+                ViewRenderer.shared.tagFrom(view: child)
             }
         }
     }
