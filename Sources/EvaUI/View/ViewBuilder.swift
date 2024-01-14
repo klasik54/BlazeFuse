@@ -56,3 +56,16 @@ extension ViewBuilder {
     }
 
 }
+
+//struct OptionalContent<Content: View>: View {
+//    let content: Content?
+//    
+//    init(_ content: Content?) {
+//        self.content = content
+//    }
+//    
+//    var body: some View {
+//        content ?? EmptyView()
+//    }
+//
+//}

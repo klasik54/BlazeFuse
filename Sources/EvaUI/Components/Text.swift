@@ -26,6 +26,10 @@ struct Text: View, Tagable {
         NeverView()
     }
     
+    var children: [any View] {
+        []
+    }
+    
     var tag: Tag
     
 }

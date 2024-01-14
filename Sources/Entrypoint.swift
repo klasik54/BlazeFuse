@@ -65,10 +65,15 @@ enum Entrypoint {
             
             let view = StateFullViewRepository.shared.getStateFullView(by: bar.id, from: jsonData)
             
-//            let triggerView = findView(by: triggerId, from: view)
-//            if let actionable = triggerView as? Actionable {
-//                actionable.action()
-//            }
+            let triggerView = findView(by: triggerId, from: view)
+            
+            if let triggerView {
+                print("Received: \(type(of: triggerView))")
+            }
+                  
+            if let actionable = triggerView as? Actionable {
+                actionable.action()
+            }
             
             
             

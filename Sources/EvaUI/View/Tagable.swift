@@ -11,5 +11,6 @@ import SwiftHtml
 protocol Tagable {
     
     var tag: Tag { get }
+    var children: [any View] { get }
     
 }

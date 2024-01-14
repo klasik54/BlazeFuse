@@ -24,7 +24,17 @@ struct ConditionalContent<TrueContent: View, FalseContent: View>: View, Tagable 
     }
     
     var body: some View {
-        EmptyView()
+        NeverView()
+    }
+    
+    var children: [any View] {
+        if let trueContent {
+            return [trueContent]
+        } else if let falseContent {
+            return [falseContent]
+        } else {
+            return []
+        }
     }
     
     var tag: Tag {

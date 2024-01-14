@@ -32,7 +32,11 @@ struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
     }
     
     var body: some View {
-        self
+        NeverView()
+    }
+    
+    var children: [any View] {
+        [label]
     }
     
     var tag: Tag {
@@ -46,3 +50,38 @@ struct Button<Label: View>: View, Tagable, Identifiable, Actionable {
     }
     
 }
+
+//final class MethodsRepository {
+//    
+//    static let shared = MethodsRepository()
+//    
+//    private var store: [String: () -> Void] = [:] // [String: () -> Void]()
+//    
+//    private init() {}
+//    
+//    func method(for id: String) -> () -> Void {
+//        return store[id]!
+//    }
+//    
+//    func register(method: @escaping () -> Void, for id: String) {
+//        store[id] = method
+//    }
+//    
+//}
+
+
+//enum Example: Codable {
+//    
+//    case changeText(String)
+//    case changeNumber(Int)
+//    case changeQuote(Quran)
+//    
+//}
+//
+//struct Quran: Codable {
+//    
+//    let surah: String
+//    let ayah: String
+//    
+//}
+

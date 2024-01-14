@@ -18,7 +18,11 @@ struct Group<Content: View>: View, Tagable {
     }
     
     var body: some View {
-        content
+        NeverView()
+    }
+    
+    var children: [any View] {
+        [content]
     }
     
     var tag: Tag {

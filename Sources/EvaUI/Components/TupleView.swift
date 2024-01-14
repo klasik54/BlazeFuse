@@ -19,15 +19,17 @@ struct TupleView<T>: View, Tagable {
     }
     
     var body: some View {
-        EmptyView()
+        NeverView()
+    }
+    
+    var children: [any View] {
+        values.compactMap { $0.value as? any View }
     }
     
     var tag: Tag {
         Div {
-            for x in values {
-                if let content = x.value as? any View {
-                    ViewRenderer().tagFrom(view: content)
-                }
+            for child in children {
+                ViewRenderer().tagFrom(view: child)
             }
         }
     }

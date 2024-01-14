@@ -41,22 +41,26 @@ struct HelloView: StateFullView {
             .backgoundColor(.yellow700)
         
         Text(state.count.description)
+//
+     
         
-
         Button {
-            print("Decrementing")
+            print("Decrementing \(state.count)")
             state.count -= 1
+            print("Finished decrementing \(state.count)")
         } label: {
             Text("Decrement")
         }
         
         Button {
-            print("Incrementing")
+            print("Incrementing \(state.count)")
             state.count += 1
-            
+            print("Finished incrementing \(state.count)")
         } label: {
             Text("Increment")
         }
+
+  
     }
     
 }
@@ -80,7 +84,11 @@ struct ViewWrapper<Content: View>: View, Tagable {
     }
     
     var body: some View {
-        self
+        NeverView()
+    }
+    
+    var children: [any View] {
+        [view]
     }
     
     var tag: Tag {

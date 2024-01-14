@@ -11,7 +11,11 @@ import SwiftHtml
 struct EmptyView: View, Tagable {
     
     var body: some View {
-        self
+        NeverView()
+    }
+    
+    var children: [any View] {
+        []
     }
     
     var tag: Tag {

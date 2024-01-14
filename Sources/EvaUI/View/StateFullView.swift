@@ -99,58 +99,12 @@ private extension StateFullViewRepository {
 }
 
 
-
-//struct Ee: Bar {
-//   
-//    let props: Props
-//    @State var state = Data()
-//    
-//    struct Props: Codable {
-//        
-//        let id: String
-//        let title: String
-//
-//    }
-//    
-//    struct Data: Codable {
-//        var email: String = "default"
-//    }
-//    
-//    
-//    init(props: Props) {
-//        self.props = props
-//    }
-//    
-//    func touch() {
-//        state.email = "ahoj"
-//    }
-//   
-//}
-
-
-
-//func bb() {
-//    let barType = BarRepository.shared.getBar(by: "1")
-//    let bar = decode(bar: barType)
-//    
-////    if let ee = bar as? Ee {
-////        print("Before: \(ee.state.email)")
-////        ee.touch()
-////        print("After: \(ee.state.email)")
-////    }
-//}
-
-
-
-
 func findView(by id: String, from view: some View) -> ((any View)?) {
-    print(type(of: view))
-//    if view is Tagable {
-//        return nil
-//    }
-
     if let identifiableView = view as? any Identifiable<String>, identifiableView.id == id {
+        print("Returning: \(type(of: view))")
         return view
+    } else if let taggableView = view as? Tagable {
+        return taggableView.children.first(where: { findView(by: id, from: $0) != nil  })
     } else {
         return findView(by: id, from: view.body)
     }
