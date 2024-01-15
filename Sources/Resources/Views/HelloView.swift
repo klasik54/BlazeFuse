@@ -32,8 +32,17 @@ struct HelloView: StatefulView {
             .foregroundColor(.red700)
             .padding(30)
             .backgoundColor(.blue700)
+        
+        Group {
+            Text("Examples:")
+                .font(.title2)
 
-        Link(href: "/counter", "Counter")
+            List {
+                Link(href: "/counter", "Counter")
+            }
+            .listStyle(.disc)
+        }
+        .padding(30)
     }
     
 }
