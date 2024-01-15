@@ -14,10 +14,8 @@ struct List<Content: View>: View, Tagable {
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
         self.tag = Ul {
-            // If there is a more than 1 child, it means it must be TuppleView.
-            // TuppleView is Tagable, so we can iterate over it's children and render them.
-            if let taggable = content() as? Tagable {
-                for child in taggable.children {
+            if let tupleView = content() as? AnyTupleView {
+                for child in tupleView.children {
                     Li {
                         ViewRenderer.shared.tagFrom(view: child)
                     }

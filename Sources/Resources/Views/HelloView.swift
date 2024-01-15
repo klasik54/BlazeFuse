@@ -21,10 +21,6 @@ struct HelloView: StatefulView {
         self.props = props
     }
     
-    var tenTimesMore: Int {
-        state.count * 10
-    }
-    
     var body: some View {
         Text("Welcome!")
             .font(.extraLargeTitle2)
@@ -33,10 +29,10 @@ struct HelloView: StatefulView {
             .padding(30)
             .backgoundColor(.blue700)
         
-        Group {
+        VStack {
             Text("Examples:")
                 .font(.title2)
-
+            
             List {
                 Link(href: "/counter", "Counter")
             }

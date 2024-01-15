@@ -8,7 +8,13 @@
 import Foundation
 import SwiftHtml
 
-struct TupleView<T>: View, Tagable {
+protocol AnyTupleView {
+    
+    var children: [any View] { get }
+
+}
+
+struct TupleView<T>: View, Tagable, AnyTupleView {
     
     var value: T
     
