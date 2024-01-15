@@ -12,7 +12,7 @@ final class AuthController {
     
     static func index(req: LoginRequest) -> some View {
         return HelloView(
-            props: .init(title: "Welcom \(req.username)")
+            props: .init()
         )
     }
     

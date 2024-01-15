@@ -12,11 +12,7 @@ struct HelloView: StatefulView {
     var props: Props
     @State var state = Data()
     
-    struct Props: Codable {
-        
-        let title: String
-        
-    }
+    struct Props: Codable {}
     struct Data: Codable {
         var count: Int = 0
     }
@@ -30,42 +26,13 @@ struct HelloView: StatefulView {
     }
     
     var body: some View {
-        Text(props.title)
+        Text("Welcome!")
             .font(.extraLargeTitle2)
             .backgoundColor(.green700)
             .foregroundColor(.red700)
             .padding(30)
             .backgoundColor(.blue700)
         
-        Text(props.title)
-            .fontFamily(.serif)
-            .backgoundColor(.blue300)
-            .foregroundColor(.red700)
-            .padding(30)
-            .backgoundColor(.yellow700)
-        
-        Text(state.count.description)
-        Text("10 times more is \(tenTimesMore)")
-       
-        Button {
-            print("Decrementing \(state.count)")
-            state.count -= 1
-            print("Finished decrementing \(state.count)")
-        } label: {
-            Text("Decrement")
-        }
-        
-        Button {
-            print("Incrementing \(state.count)")
-            state.count += 1
-            print("Finished incrementing \(state.count)")
-        } label: {
-            Text("Increment")
-        }
-        
-        if state.count > 10 {
-            Text("Count is greater than 10")
-        }
     }
     
 }

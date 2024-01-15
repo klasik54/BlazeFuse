@@ -36,7 +36,11 @@ enum Entrypoint {
         app.middleware.add(FileMiddleware())
         
         app.router.get("") { request in
-            return HelloView(props: .init(title: "Hello Swift"))
+            return HelloView(props: .init())
+        }
+        
+        app.router.get("counter") { request in
+            return CounterView(props: .init())
         }
         
         app.router.post("eva", use: evaUIRouteHandler)
@@ -68,7 +72,7 @@ enum Entrypoint {
         
         app.router.get("example") { request in
             return HelloView(
-                props: .init(title: "Hello from example")
+                props: .init()
             )
         }
         app.router.post("login", use: AuthController.index)
