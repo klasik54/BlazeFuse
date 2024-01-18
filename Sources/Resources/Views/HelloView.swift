@@ -21,6 +21,18 @@ struct HelloView: StatefulView {
         self.props = props
     }
     
+    struct Example {
+        
+        let title: String
+        let href: String
+        
+    }
+    
+    private let examples: [Example] = [
+        Example(title: "Counter", href: "/counter"),
+        Example(title: "Text", href: "/text"),
+    ]
+    
     var body: some View {
         Text("Welcome!")
             .font(.extraLargeTitle2)
@@ -32,9 +44,13 @@ struct HelloView: StatefulView {
         VStack {
             Text("Examples:")
                 .font(.title2)
-            
+
             List {
-                Link(href: "/counter", "Counter")
+                ForEach(examples) { example in
+                    Link(href: example.href, example.title)
+                }
+                .padding(20)
+                .backgoundColor(.blue200)
             }
             .listStyle(.disc)
         }
