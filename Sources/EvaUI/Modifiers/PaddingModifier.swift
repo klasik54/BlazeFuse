@@ -15,7 +15,7 @@ struct PaddingModifier: ViewModifier {
     init(padding: Float, content: any View) {
         self.padding = padding
         self.tag = Div {
-            ViewRenderer.shared.tagFrom(view: content)
+            // ViewRenderer.shared.tagFrom(view: content)
         }
     }
     

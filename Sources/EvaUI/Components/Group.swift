@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct Group<Content: View>: View, Tagable {
+struct Group<Content: View>: View, HTMLRepresentable {
     
     let content: Content
     
@@ -24,10 +24,12 @@ struct Group<Content: View>: View, Tagable {
         [content]
     }
     
-    var tag: Tag {
-        Div {
-            ViewRenderer.shared.tagFrom(view: content)
-        }
-    }
+    var parentTag: Tag? { Div() }
+    
+//    var tag: Tag {
+//        Div {
+//            ViewRenderer.shared.tagFrom(view: content)
+//        }
+//    }
     
 }

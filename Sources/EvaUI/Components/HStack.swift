@@ -15,7 +15,7 @@ enum VerticalAlignment: String {
     
 }
 
-struct HStack<Content: View>: View, Tagable {
+struct HStack<Content: View>: View, HTMLRepresentable {
     
     let alignment: VerticalAlignment
     let spacing: Float
@@ -31,16 +31,21 @@ struct HStack<Content: View>: View, Tagable {
         NeverView()
     }
     
-    var tag: Tag {
-        Div {
-            if let tupleView = content as? AnyTupleView {
-                for child in tupleView.children {
-                    ViewRenderer.shared.tagFrom(view: child)
-                }
-            } else {
-                ViewRenderer.shared.tagFrom(view: content)
-            }
-        }.class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")
+//    var tag: Tag {
+//        Div {
+//            if let tupleView = content as? AnyTupleView {
+//                for child in tupleView.children {
+//                    ViewRenderer.shared.tagFrom(view: child)
+//                }
+//            } else {
+//                ViewRenderer.shared.tagFrom(view: content)
+//            }
+//        }.class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")
+//    }
+    
+    var parentTag: Tag? {
+        Div()
+            .class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")
     }
     
     var children: [any View] {[

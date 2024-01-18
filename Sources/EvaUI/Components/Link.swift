@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct Link<Content: View>: View, Tagable {
+struct Link<Content: View>: View, HTMLRepresentable {
     
     let href: String
     let content: Content
@@ -22,12 +22,16 @@ struct Link<Content: View>: View, Tagable {
         NeverView()
     }
     
-    var tag: Tag {
-        A {
-            ViewRenderer.shared.tagFrom(view: content)
-        }.href(href)
-    }
+//    var tag: Tag {
+//        A {
+//            ViewRenderer.shared.tagFrom(view: content)
+//        }.href(href)
+//    }
     
+    var parentTag: Tag? {
+        A().href(href)
+    }
+
     var children: [any View] {[
         content
     ]}

@@ -8,13 +8,14 @@
 import Foundation
 import SwiftHtml
 
-protocol AnyTupleView {
-    
-    var children: [any View] { get }
+//protocol AnyTupleView {
+//    
+//    var tag: Tag { get }
+//    var children: [any View] { get }
+//
+//}
 
-}
-
-struct TupleView<T>: View, Tagable, AnyTupleView {
+struct TupleView<T>: View, HTMLRepresentable {
     
     var value: T
     
@@ -32,12 +33,14 @@ struct TupleView<T>: View, Tagable, AnyTupleView {
         values.compactMap { $0.value as? any View }
     }
     
-    var tag: Tag {
-        Div {
-            for child in children {
-                ViewRenderer.shared.tagFrom(view: child)
-            }
-        }
-    }
+    var parentTag: Tag? { nil }
+    
+//    var tag: Tag {
+//        Div {
+//            for child in children {
+//                ViewRenderer.shared.tagFrom(view: child)
+//            }
+//        }
+//    }
     
 }

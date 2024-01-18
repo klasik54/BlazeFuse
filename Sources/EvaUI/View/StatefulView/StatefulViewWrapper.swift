@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct StatefulViewWrapper<Content: View>: View, Tagable {
+struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
     
     let id: String
     let view: Content
@@ -32,14 +32,14 @@ struct StatefulViewWrapper<Content: View>: View, Tagable {
         [view]
     }
     
-    var tag: Tag {
+    var parentTag: Tag? {
         Div {
             Input()
                 .name("data")
                 .type(.hidden)
                 .value(jsonData)
 
-            ViewRenderer.shared.tagFrom(view: view)
+//            ViewRenderer.shared.tagFrom(view: view)
         }
         .id(id)
         .class("component")

@@ -27,11 +27,11 @@ struct CounterView: StatefulView {
     
     var body: some View {
         Text("Counter view")
-            .font(.extraLargeTitle2)
-            .backgoundColor(.green700)
-            .foregroundColor(.red700)
-            .padding(30)
-            .backgoundColor(.blue700)
+//            .font(.extraLargeTitle2)
+//            .backgoundColor(.green700)
+//            .foregroundColor(.red700)
+//            .padding(30)
+//            .backgoundColor(.blue700)
 
         Text(state.count.description)
         Text("10 times more is \(tenTimesMore)")

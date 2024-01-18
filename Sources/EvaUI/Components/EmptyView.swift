@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct EmptyView: View, Tagable {
+struct EmptyView: View, HTMLRepresentable {
     
     var body: some View {
         NeverView()
@@ -18,9 +18,11 @@ struct EmptyView: View, Tagable {
         []
     }
     
-    var tag: Tag {
-        Div()
-            .class(add: "none")
-    }
+    var parentTag: Tag? { Div() }
+    
+//    var tag: Tag {
+//        Div()
+//            .class(add: "none")
+//    }
     
 }

@@ -35,24 +35,24 @@ struct HelloView: StatefulView {
     
     var body: some View {
         Text("Welcome!")
-            .font(.extraLargeTitle2)
-            .backgoundColor(.green700)
-            .foregroundColor(.red700)
-            .padding(30)
-            .backgoundColor(.blue700)
+//            .font(.extraLargeTitle2)
+//            .backgoundColor(.green700)
+//            .foregroundColor(.red700)
+//            .padding(30)
+//            .backgoundColor(.blue700)
         
         VStack {
             Text("Examples:")
-                .font(.title2)
+//                .font(.title2)
 
             List {
                 ForEach(examples) { example in
                     Link(href: example.href, example.title)
                 }
-                .padding(20)
-                .backgoundColor(.blue200)
+//                .padding(20)
+//                .backgoundColor(.blue200)
             }
-            .listStyle(.disc)
+//            .listStyle(.disc)
         }
         .padding(30)
     }
