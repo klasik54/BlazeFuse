@@ -8,21 +8,21 @@
 import Foundation
 import SwiftHtml
 
-struct PaddingModifier: ViewModifier {
+struct PaddingModifier: ViewModifier, HTMLRepresentable {
     
     let padding: Float
     
     init(padding: Float, content: any View) {
         self.padding = padding
-        self.tag = Div {
-            // ViewRenderer.shared.tagFrom(view: content)
-        }
+        self.children = [content]
     }
     
     var className: String {
         "p-[\(padding)px]"
     }
-    var tag: Tag?
+    var parentTag: Tag? = Div()
+    
+    var children: [any View]
     
 }
 

@@ -15,9 +15,6 @@ final class ViewRenderer {
     private init() {}
     
     func renderPage(_ view: some View) -> String {
-        let body = Body()
-        let tag = tagFrom2(view: view, parentTag: body)
-
         let document = Document(.html) {
             Html {
                 Head {
@@ -30,11 +27,7 @@ final class ViewRenderer {
                         .crossorigin(.anonymous)
                 }
                 
-                tag
-                
-//                Body {
-//                    tagFrom(view: view)
-//                }
+                tagFrom2(view: view, parentTag: Body())
             }
         }
         
@@ -53,68 +46,40 @@ final class ViewRenderer {
         return html
     }
     
-//    func tagFrom<T: View>(view: T, classList: [String] = []) -> Tag {
-//        var classList = classList
-//        let mirror = Mirror(reflecting: view)
-//        if let stateFullView = view as? any StatefulView {
-//            StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
-//        }
-//        let view = if let stateFullView = view as? any StatefulView {
-//            stateFullView.wrapper
-//        } else {
-//            view
-//        }
-//        
-//        for child in mirror.children {
-//            if let viewModifier = child.value as? ViewModifier {
-//                classList.append(viewModifier.className)
-//                if let tag = viewModifier.tag {
-//                    return tag
-//                        .class(add: classList.joined(separator: " "))
-//                }
-//            }
-//        }
-//        
-//        if let view = view as? Tagable {
-//            return view.tag
-//                .class(add: classList.joined(separator: " "))
-//        }
-//      
-//        return tagFrom(view: view.body, classList: classList)
-//    }
-    
     func tagFrom2<T: View>(view: T, classList: [String] = [], parentTag: Tag) -> Tag {
-        var children: [Tag] = parentTag.children
-        
         if let htmlRepresentable = view as? HTMLRepresentable {
-            for child in htmlRepresentable.children {
-                let parentTag = if let htmlParentTag = htmlRepresentable.parentTag {
-                    htmlParentTag
-                } else {
-                    parentTag
-                }
-                
-                let childTag = tagFrom2(view: child, parentTag: parentTag)
-                
-                children.append(childTag)
+            var newParent = if let viewParent = htmlRepresentable.parentTag {
+                viewParent
+            } else {
+                parentTag
             }
-        } else {
-            let childTag = tagFrom2(view: view.body, parentTag: parentTag)
+            var children = newParent.children
             
-            children.append(childTag)
+            for child in htmlRepresentable.children {
+                if let childHTMLRepresentable = child as? HTMLRepresentable,
+                   childHTMLRepresentable.parentTag == nil {
+                    let tagCopy = Tag(children)
+                    tagCopy.setAttributes(newParent.node.attributes)
+                    tagCopy.setContents(newParent.node.contents)
+                    tagCopy.node = newParent.node
+                    
+                    newParent = tagFrom2(view: child, parentTag: tagCopy)
+                    children = newParent.children
+                } else {
+                    let childTag = tagFrom2(view: child, parentTag: newParent)
+                    children.append(childTag)
+                }
+            }
+            
+            let tagCopy = Tag(children)
+            tagCopy.setAttributes(newParent.node.attributes)
+            tagCopy.setContents(newParent.node.contents)
+            tagCopy.node = newParent.node
+            
+            return tagCopy
+        } else {
+            return tagFrom2(view: view.body, parentTag: parentTag)
         }
-        
-
-        
-        
-        let newTag = Tag(children)
-        newTag.setAttributes(parentTag.node.attributes)
-        newTag.setContents(parentTag.node.contents)
-        print("Parent: \(parentTag.node.name)")
-        print("New tag: \(newTag.node.name)")
-        // newTag.class(parentTag.node.)
-        
-        return newTag
     }
     
 }
@@ -126,34 +91,3 @@ protocol HTMLRepresentable {
     
 }
 
-//extension Tag {
-//
-//    func copyNode(node: Node) {
-//        self.node = node
-//    }
-//    
-//}
-
-class CopyTag: Tag {
-    
-    override class func createNode() -> Node {
-        No
-    }
-    
-//    override class func createNode() -> Node {
-//        tag.node
-////        Node(type: .standard, name: tag.node.name)
-//    }
-    
-    let name: String
-    let tag: Tag
-    
-    init(tag: Tag) {
-        self.tag = tag
-        self.name = tag.node.name!
-        self.node = Node()
-        super.init(tag.children)
-    }
-    
-    
-}

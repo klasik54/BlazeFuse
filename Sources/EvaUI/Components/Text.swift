@@ -12,14 +12,14 @@ struct Text: View, HTMLRepresentable {
     
     let text: String
     
-//    private init(text: String, tag: Tag) {
-//        self.text = text
-//        self.tag = tag
-//    }
-//    
+    private init(text: String, parentTag: Tag) {
+        self.text = text
+        self.parentTag = parentTag
+    }
+    
     init(_ text: String) {
         self.text = text
-//        self.tag = P(text)
+        self.parentTag = P(text)
     }
     
     var body: some View {
@@ -30,31 +30,29 @@ struct Text: View, HTMLRepresentable {
         []
     }
     
-//    var tag: Tag
-    
-    var parentTag: Tag? { GroupTag(<#T##builder: () -> Tag##() -> Tag#>)}
+    var parentTag: Tag?
     
 }
 
-//extension Text {
-//    
-//    func fontWeight(_ weight: FontWeight) -> Text {
-//        return Text(text: text, tag: tag.fontWeight(weight))
-//    }
-//    
-//    func font(_ font: Font) -> Text {
-//        return Text(text: text, tag: tag.font(font))
-//    }
-//    
-//    func fontSize(_ size: FontSize) -> Text {
-//        return Text(text: text, tag: tag.fontSize(size))
-//    }
-//    
-//    func fontFamily(_ family: FontFamily) -> Text {
-//        return Text(text: text, tag: tag.fontFamily(family))
-//    }
-//    
-//}
+extension Text {
+    
+    func fontWeight(_ weight: FontWeight) -> Text {
+        return Text(text: text, parentTag: parentTag!.fontWeight(weight))
+    }
+    
+    func font(_ font: Font) -> Text {
+        return Text(text: text, parentTag: parentTag!.font(font))
+    }
+    
+    func fontSize(_ size: FontSize) -> Text {
+        return Text(text: text, parentTag: parentTag!.fontSize(size))
+    }
+    
+    func fontFamily(_ family: FontFamily) -> Text {
+        return Text(text: text, parentTag: parentTag!.fontFamily(family))
+    }
+    
+}
 
 struct NeverView: View {
     

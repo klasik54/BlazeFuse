@@ -21,14 +21,6 @@ struct ForEach<Content: View, Data: RandomAccessCollection>: View, HTMLRepresent
         NeverView()
     }
     
-//    var tag: Tag {
-//        Div {
-//            for element in data {
-//                ViewRenderer.shared.tagFrom(view: content(element))
-//            }
-//        }
-//    }
-    
     var parentTag: Tag? { nil }
     
     var children: [any View] {

@@ -31,18 +31,6 @@ struct HStack<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-//    var tag: Tag {
-//        Div {
-//            if let tupleView = content as? AnyTupleView {
-//                for child in tupleView.children {
-//                    ViewRenderer.shared.tagFrom(view: child)
-//                }
-//            } else {
-//                ViewRenderer.shared.tagFrom(view: content)
-//            }
-//        }.class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")
-//    }
-    
     var parentTag: Tag? {
         Div()
             .class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")

@@ -39,14 +39,4 @@ struct ConditionalContent<TrueContent: View, FalseContent: View>: View, HTMLRepr
     
     var parentTag: Tag? { nil }
     
-//    var tag: Tag {
-//        if let trueContent {
-//            return ViewRenderer.shared.tagFrom(view: trueContent)
-//        } else if let falseContent {
-//            return ViewRenderer.shared.tagFrom(view: falseContent)
-//        } else {
-//            return Div()
-//        }
-//    }
-    
 }

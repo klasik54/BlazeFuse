@@ -22,11 +22,6 @@ struct Link<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-//    var tag: Tag {
-//        A {
-//            ViewRenderer.shared.tagFrom(view: content)
-//        }.href(href)
-//    }
     
     var parentTag: Tag? {
         A().href(href)
