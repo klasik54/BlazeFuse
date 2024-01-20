@@ -25,6 +25,8 @@ final class ViewRenderer {
                         .src("https://unpkg.com/htmx.org@1.9.10")
                         .integrity("sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC")
                         .crossorigin(.anonymous)
+                    Meta()
+                        .charset("UTF-8")
                 }
                 
                 tagFrom2(view: view, parentTag: Body())
@@ -46,21 +48,28 @@ final class ViewRenderer {
         return html
     }
     
-    func tagFrom2<T: View>(view: T, classList: [String] = [], parentTag: Tag) -> Tag {
-        if let htmlRepresentable = view as? any HTMLRepresentable & View {
-            return renderHTMLRepresentableView(view: htmlRepresentable, parentTag: parentTag)
+    func tagFrom2<T: View>(view: T, parentTag: Tag, viewModifiers: [any ViewModifier] = []) -> Tag {
+        if let stateFullView = view as? any StatefulView {
+            StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
+            
+            return tagFrom2(view: stateFullView.wrapper, parentTag: parentTag)
+        } else if let modifedContent = view as? AnyModifiedContent,
+            let viewModifier = modifedContent.anyModifier as? ViewModifier {
+            return tagFrom2(view: view.body, parentTag: parentTag, viewModifiers: viewModifiers + [viewModifier])
+        } else if let htmlRepresentable = view as? any HTMLRepresentable & View {
+            return renderHTMLRepresentableView(view: htmlRepresentable, viewModifiers: viewModifiers)
         } else {
-            return tagFrom2(view: view.body, parentTag: parentTag)
+            return tagFrom2(view: view.body, parentTag: parentTag, viewModifiers: viewModifiers)
         }
     }
     
-    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(view: T, parentTag: Tag) -> Tag {
-        var children = parentTag.children
+    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(view: T, viewModifiers: [any ViewModifier]) -> Tag {
+        var children: [Tag] = []
 
         for child in view.children {
             if let childWrapper = view.childWrapper {
                 let child = tagFrom2(view: child, parentTag: view.parentTag)
-                if child.node.name == "group" {
+                if child.node.type == .group {
                     let groupChildren = getGroupTagChildren(groupTag: child)
                     for child in groupChildren {
                         let wrappingTag = createCopyTag(tag: childWrapper, children: [child])
@@ -76,7 +85,41 @@ final class ViewRenderer {
             }
         }
         
-        return createCopyTag(tag: view.parentTag, children: children)
+        
+        var resultTag = createCopyTag(tag: view.parentTag, children: children)
+
+        if viewModifiers.count > 0 && view.parentTag.node.type != .group {
+            for modifier in viewModifiers.reversed() {
+                if let modifier = modifier as? HTMLRepresentable & ViewModifier {
+                    resultTag = createCopyTag(
+                        tag: modifier.parentTag,
+                        children: [resultTag]
+                    ).class(add: modifier.className)
+                } else {
+                    resultTag = resultTag.class(add: modifier.className)
+                }
+            }
+        } else if view.parentTag.node.type == .group && viewModifiers.count > 0 {
+            for (index, _) in children.enumerated() {
+                for modifier in viewModifiers.reversed() {
+                    let newChild = if let modifier = modifier as? HTMLRepresentable & ViewModifier {
+                        createCopyTag(
+                            tag: modifier.parentTag,
+                            children: [children[index]]
+                        ).class(add: modifier.className)
+                    } else {
+                        children[index].class(add: modifier.className)
+                    }
+                    children[index] = newChild
+                }
+            }
+            
+            resultTag = createCopyTag(tag: view.parentTag, children: children)
+        }
+        
+
+        
+        return resultTag
     }
     
     func createCopyTag(tag: Tag, children: [Tag]) -> Tag {

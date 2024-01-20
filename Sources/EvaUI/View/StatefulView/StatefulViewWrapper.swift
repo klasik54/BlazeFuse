@@ -29,20 +29,42 @@ struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
     }
     
     var children: [any View] {
-        [view]
+        [
+            HiddenInput(name: "data", value: jsonData),
+            view
+        ]
     }
     
     var parentTag: Tag {
-        Div {
-            Input()
-                .name("data")
-                .type(.hidden)
-                .value(jsonData)
-
-//            ViewRenderer.shared.tagFrom(view: view)
-        }
+        Div()
         .id(id)
         .class("component")
     }
     
 }
+
+struct HiddenInput: View, HTMLRepresentable {
+    
+    let name: String
+    let value: String
+    
+    init(name: String, value: String) {
+        self.name = name
+        self.value = value
+    }
+    
+    var body: some View {
+        NeverView()
+    }
+    
+    var parentTag: Tag {
+        Input()
+            .name(name)
+            .type(.hidden)
+            .value(value)
+    }
+    
+    var children: [any View] = []
+    
+}
+

@@ -12,7 +12,7 @@ struct ForEach<Content: View, Data: RandomAccessCollection>: View, HTMLRepresent
     let content: (Data.Element) -> Content
     let data: Data
     
-    init(_ data: Data, content: @escaping (Data.Element) -> Content) {
+    init(_ data: Data, @ViewBuilder content: @escaping (Data.Element) -> Content) {
         self.content = content
         self.data = data
     }

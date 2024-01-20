@@ -33,29 +33,57 @@ struct HelloView: View {
         Example(title: "Text", href: "/text"),
     ]
     
-    var body: some View {        
-        VStack {
-            Text("Examples:")
+    var body: some View {
+        VStack(spacing: 30) {
+            Text("👋 Welcome in BlazeFuse!")
+                .font(.largeTitle)
+                .foregroundColor(.red500)
+            
+            Text("👀 Checkout these examples:")
                 .font(.title2)
-                .foregroundColor(.red200)
-
-            List {
-                Text("Welcome!")
-                Text("Welcome!")
-                ForEach(examples) { example in
-                    Link(href: example.href, example.title)
-                }
-                
-                List {
-                    ForEach(examples) { example in
-                        Link(href: example.href, example.title)
-                    }
-                }
-                .backgoundColor(.blue200)
+                .foregroundColor(.blue500)
+            
+            ForEach(examples) { example in
+                Link(href: example.href, example.title)
+                    .padding(10)
+                    .backgoundColor(.red300)
+                    .padding(10)
+                    .backgoundColor(.red400)
             }
-            .listStyle(.disc)
+            
+            MyCustomView()
+                .padding(20)
+                .backgoundColor(.red500)
+            
+        }.padding(30)
+    }
+    
+}
+
+struct MyCustomView: View {
+    
+    var body: some View {
+        VStack {
+            ForEach(1...3) {
+                MySecondCustomView(text: $0.description)
+                    .padding(20)
+                    .backgoundColor(.blue600)
+            }
         }
-        .padding(30)
+    }
+    
+}
+
+struct MySecondCustomView: View {
+    
+    let text: String
+    
+    var body: some View {
+        HStack {
+            Text("This is second custom view")
+            
+            Text(text)
+        }
     }
     
 }

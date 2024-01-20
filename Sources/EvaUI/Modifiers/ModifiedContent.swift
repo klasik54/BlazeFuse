@@ -8,7 +8,15 @@
 import Foundation
 import Hummingbird
 
-struct ModifiedContent<Content, Modifier> {
+protocol AnyModifiedContent {
+    
+    var anyModifier: Any { get }
+    
+}
+
+struct ModifiedContent<Content, Modifier>: AnyModifiedContent {
+    
+    var anyModifier: Any { modifier }
     
     let content: Content
     let modifier: Modifier
