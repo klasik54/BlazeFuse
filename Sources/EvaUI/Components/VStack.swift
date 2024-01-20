@@ -43,7 +43,7 @@ struct VStack<Content: View>: View, HTMLRepresentable {
 //        }.class("flex flex-col gap-[\(spacing)px] items-\(alignment.rawValue)")
 //    }
     
-    var parentTag: Tag? {
+    var parentTag: Tag {
         Div()
             .class("flex flex-col gap-[\(spacing)px] items-\(alignment.rawValue)")
     }

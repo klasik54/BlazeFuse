@@ -37,6 +37,6 @@ struct ConditionalContent<TrueContent: View, FalseContent: View>: View, HTMLRepr
         }
     }
     
-    var parentTag: Tag? { nil }
+    var parentTag: Tag = GroupTag()
     
 }

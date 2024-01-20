@@ -30,26 +30,26 @@ struct Text: View, HTMLRepresentable {
         []
     }
     
-    var parentTag: Tag?
+    var parentTag: Tag
     
 }
 
 extension Text {
     
     func fontWeight(_ weight: FontWeight) -> Text {
-        return Text(text: text, parentTag: parentTag!.fontWeight(weight))
+        return Text(text: text, parentTag: parentTag.fontWeight(weight))
     }
     
     func font(_ font: Font) -> Text {
-        return Text(text: text, parentTag: parentTag!.font(font))
+        return Text(text: text, parentTag: parentTag.font(font))
     }
     
     func fontSize(_ size: FontSize) -> Text {
-        return Text(text: text, parentTag: parentTag!.fontSize(size))
+        return Text(text: text, parentTag: parentTag.fontSize(size))
     }
     
     func fontFamily(_ family: FontFamily) -> Text {
-        return Text(text: text, parentTag: parentTag!.fontFamily(family))
+        return Text(text: text, parentTag: parentTag.fontFamily(family))
     }
     
 }

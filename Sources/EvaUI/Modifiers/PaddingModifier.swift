@@ -20,7 +20,7 @@ struct PaddingModifier: ViewModifier, HTMLRepresentable {
     var className: String {
         "p-[\(padding)px]"
     }
-    var parentTag: Tag? = Div()
+    var parentTag: Tag = Div()
     
     var children: [any View]
     

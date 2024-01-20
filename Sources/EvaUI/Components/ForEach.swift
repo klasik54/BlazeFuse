@@ -21,10 +21,18 @@ struct ForEach<Content: View, Data: RandomAccessCollection>: View, HTMLRepresent
         NeverView()
     }
     
-    var parentTag: Tag? { nil }
+    var parentTag: Tag { GroupTag() }
     
     var children: [any View] {
         data.map { content($0) }
+    }
+    
+}
+
+final class GroupTag: Tag {
+    
+    override class func createNode() -> Node {
+        Node(type: .group, name: "group", contents: nil, attributes: [])
     }
     
 }

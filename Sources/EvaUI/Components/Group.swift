@@ -24,7 +24,7 @@ struct Group<Content: View>: View, HTMLRepresentable {
         [content]
     }
     
-    var parentTag: Tag? = Div() // { Div() }
+    var parentTag: Tag = Div() // { Div() }
     
     
 }

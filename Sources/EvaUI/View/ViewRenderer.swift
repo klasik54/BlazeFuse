@@ -47,47 +47,74 @@ final class ViewRenderer {
     }
     
     func tagFrom2<T: View>(view: T, classList: [String] = [], parentTag: Tag) -> Tag {
-        if let htmlRepresentable = view as? HTMLRepresentable {
-            var newParent = if let viewParent = htmlRepresentable.parentTag {
-                viewParent
-            } else {
-                parentTag
-            }
-            var children = newParent.children
-            
-            for child in htmlRepresentable.children {
-                if let childHTMLRepresentable = child as? HTMLRepresentable,
-                   childHTMLRepresentable.parentTag == nil {
-                    let tagCopy = Tag(children)
-                    tagCopy.setAttributes(newParent.node.attributes)
-                    tagCopy.setContents(newParent.node.contents)
-                    tagCopy.node = newParent.node
-                    
-                    newParent = tagFrom2(view: child, parentTag: tagCopy)
-                    children = newParent.children
-                } else {
-                    let childTag = tagFrom2(view: child, parentTag: newParent)
-                    children.append(childTag)
-                }
-            }
-            
-            let tagCopy = Tag(children)
-            tagCopy.setAttributes(newParent.node.attributes)
-            tagCopy.setContents(newParent.node.contents)
-            tagCopy.node = newParent.node
-            
-            return tagCopy
+        if let htmlRepresentable = view as? any HTMLRepresentable & View {
+            return renderHTMLRepresentableView(view: htmlRepresentable, parentTag: parentTag)
         } else {
             return tagFrom2(view: view.body, parentTag: parentTag)
         }
     }
     
+    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(view: T, parentTag: Tag) -> Tag {
+        var children = parentTag.children
+
+        for child in view.children {
+            if let childWrapper = view.childWrapper {
+                let child = tagFrom2(view: child, parentTag: view.parentTag)
+                if child.node.name == "group" {
+                    let groupChildren = getGroupTagChildren(groupTag: child)
+                    for child in groupChildren {
+                        let wrappingTag = createCopyTag(tag: childWrapper, children: [child])
+                        children.append(wrappingTag)
+                    }
+                } else {
+                    let wrappingTag = createCopyTag(tag: childWrapper, children: [child])
+                    children.append(wrappingTag)
+                }
+            } else {
+                let childTag = tagFrom2(view: child, parentTag: view.parentTag)
+                children.append(childTag)
+            }
+        }
+        
+        return createCopyTag(tag: view.parentTag, children: children)
+    }
+    
+    func createCopyTag(tag: Tag, children: [Tag]) -> Tag {
+        let tagCopy = Tag(children)
+        tagCopy.setAttributes(tag.node.attributes)
+        tagCopy.setContents(tag.node.contents)
+        tagCopy.node = tag.node
+        
+        return tagCopy
+    }
+    
+    func getGroupTagChildren(groupTag: Tag) -> [Tag] {
+        var children: [Tag] = []
+        
+        for child in groupTag.children {
+            if child.node.type == .group {
+                children.append(contentsOf: getGroupTagChildren(groupTag: child))
+            } else {
+                children.append(child)
+            }
+        }
+        
+        return children
+    }
+
 }
 
 protocol HTMLRepresentable {
     
-    var parentTag: Tag? { get }
+    var parentTag: Tag { get }
     var children: [any View] { get }
+    var childWrapper: Tag? { get }
+    
+}
+
+extension HTMLRepresentable {
+    
+    var childWrapper: Tag? { nil }
     
 }
 

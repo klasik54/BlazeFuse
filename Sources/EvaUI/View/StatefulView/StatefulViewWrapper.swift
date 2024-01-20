@@ -32,7 +32,7 @@ struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
         [view]
     }
     
-    var parentTag: Tag? {
+    var parentTag: Tag {
         Div {
             Input()
                 .name("data")

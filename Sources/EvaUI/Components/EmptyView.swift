@@ -18,7 +18,6 @@ struct EmptyView: View, HTMLRepresentable {
         []
     }
     
-    var parentTag: Tag? = Div()
-    
+    var parentTag: Tag = Div()
     
 }

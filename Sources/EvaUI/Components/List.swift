@@ -24,37 +24,22 @@ struct List<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-    var parentTag: Tag? = Ul()
+    var parentTag: Tag = Ul()
     
     var children: [any View] {
-        if let tupleView = content as? HTMLRepresentable {
-            return tupleView.children.map { view in ListItem(content: { AnyView(view) }) }
-        } else {
-            return [ListItem(content: { content })]
-        }
+        [content]
+//        if let tupleView = content as? HTMLRepresentable {
+//            return tupleView.children.map { view in ListItem(content: { AnyView(view) }) }
+//        } else {
+//            return [ListItem(content: { content })]
+//        }
     }
+    
+    var childWrapper: Tag? = Li()
     
 }
 
-struct AnyView: View, HTMLRepresentable {
-    
-    let view: any View
-    
-    init(_ view: any View) {
-        self.view = view
-    }
-    
-    var body: some View {
-        NeverView()
-    }
-    
-    var parentTag: Tag? = nil
-    
-    var children: [any View] {
-        [view]
-    }
-    
-}
+
 
 struct ListItem<Content: View>: View, HTMLRepresentable {
     
@@ -68,7 +53,7 @@ struct ListItem<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-    var parentTag: Tag? = Li()
+    var parentTag: Tag = Li()
     var children: [any View] {[
         content
     ]}
@@ -78,11 +63,11 @@ struct ListItem<Content: View>: View, HTMLRepresentable {
 extension List {
     
     func listStyle(_ style: ListStyle) -> List {
-        return List(parentTag: parentTag!.listStyle(style), content: { content })
+        return List(parentTag: parentTag.listStyle(style), content: { content })
     }
     
     func listStylePosition(_ position: ListStylePosition) -> List {
-        return List(parentTag: parentTag!.listStylePosition(position), content: { content })
+        return List(parentTag: parentTag.listStylePosition(position), content: { content })
     }
     
 }
