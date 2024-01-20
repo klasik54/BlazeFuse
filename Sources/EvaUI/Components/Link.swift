@@ -22,8 +22,7 @@ struct Link<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-    
-    var parentTag: Tag {
+    var htmlTag: Tag {
         A().href(href)
     }
 

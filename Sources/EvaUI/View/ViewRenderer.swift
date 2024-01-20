@@ -29,7 +29,9 @@ final class ViewRenderer {
                         .charset("UTF-8")
                 }
                 
-                tagFrom2(view: view, parentTag: Body())
+                Body {
+                    tagFrom(view: view)
+                }
             }
         }
         
@@ -40,84 +42,62 @@ final class ViewRenderer {
     
     func renderComponent(_ view: some View) -> String {
         let document = Document(.html) {
-            // tagFrom(view: view)
-            tagFrom2(view: view, parentTag: Div())
+            tagFrom(view: view)
         }
         let html = DocumentRenderer().render(document)
         
         return html
     }
+
+}
+
+// MARK: - Private
+
+private extension ViewRenderer {
     
-    func tagFrom2<T: View>(view: T, parentTag: Tag, viewModifiers: [any ViewModifier] = []) -> Tag {
+    func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = []) -> Tag {
         if let stateFullView = view as? any StatefulView {
             StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
-            
-            return tagFrom2(view: stateFullView.wrapper, parentTag: parentTag)
+            return tagFrom(view: stateFullView.wrapper, viewModifiers: viewModifiers)
         } else if let modifedContent = view as? AnyModifiedContent,
             let viewModifier = modifedContent.anyModifier as? ViewModifier {
-            return tagFrom2(view: view.body, parentTag: parentTag, viewModifiers: viewModifiers + [viewModifier])
+            return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier])
         } else if let htmlRepresentable = view as? any HTMLRepresentable & View {
             return renderHTMLRepresentableView(view: htmlRepresentable, viewModifiers: viewModifiers)
         } else {
-            return tagFrom2(view: view.body, parentTag: parentTag, viewModifiers: viewModifiers)
+            return tagFrom(view: view.body, viewModifiers: viewModifiers)
         }
     }
     
-    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(view: T, viewModifiers: [any ViewModifier]) -> Tag {
+    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(
+        view: T,
+        viewModifiers: [any ViewModifier]
+    ) -> Tag {
         var children: [Tag] = []
 
-        for child in view.children {
-            if let childWrapper = view.childWrapper {
-                let child = tagFrom2(view: child, parentTag: view.parentTag)
-                if child.node.type == .group {
-                    let groupChildren = getGroupTagChildren(groupTag: child)
-                    for child in groupChildren {
-                        let wrappingTag = createCopyTag(tag: childWrapper, children: [child])
-                        children.append(wrappingTag)
-                    }
-                } else {
-                    let wrappingTag = createCopyTag(tag: childWrapper, children: [child])
-                    children.append(wrappingTag)
-                }
+        for childView in view.children {
+            let passedViewModifiers: [any ViewModifier] = if view.htmlTag.node.type == .group {
+                viewModifiers
             } else {
-                let childTag = tagFrom2(view: child, parentTag: view.parentTag)
+                []
+            }
+
+            let childTag = tagFrom(view: childView, viewModifiers: passedViewModifiers)
+            
+            if childTag.node.type == .group {
+                children.append(contentsOf: childTag.children)
+            } else {
                 children.append(childTag)
             }
         }
         
+        var resultTag = createCopyTag(tag: view.htmlTag, children: children)
         
-        var resultTag = createCopyTag(tag: view.parentTag, children: children)
-
-        if viewModifiers.count > 0 && view.parentTag.node.type != .group {
+        if view.htmlTag.node.type != .group {
             for modifier in viewModifiers.reversed() {
-                if let modifier = modifier as? HTMLRepresentable & ViewModifier {
-                    resultTag = createCopyTag(
-                        tag: modifier.parentTag,
-                        children: [resultTag]
-                    ).class(add: modifier.className)
-                } else {
-                    resultTag = resultTag.class(add: modifier.className)
-                }
+                resultTag = applyModifier(viewModifier: modifier, for: resultTag)
             }
-        } else if view.parentTag.node.type == .group && viewModifiers.count > 0 {
-            for (index, _) in children.enumerated() {
-                for modifier in viewModifiers.reversed() {
-                    let newChild = if let modifier = modifier as? HTMLRepresentable & ViewModifier {
-                        createCopyTag(
-                            tag: modifier.parentTag,
-                            children: [children[index]]
-                        ).class(add: modifier.className)
-                    } else {
-                        children[index].class(add: modifier.className)
-                    }
-                    children[index] = newChild
-                }
-            }
-            
-            resultTag = createCopyTag(tag: view.parentTag, children: children)
         }
-        
-
         
         return resultTag
     }
@@ -131,33 +111,16 @@ final class ViewRenderer {
         return tagCopy
     }
     
-    func getGroupTagChildren(groupTag: Tag) -> [Tag] {
-        var children: [Tag] = []
-        
-        for child in groupTag.children {
-            if child.node.type == .group {
-                children.append(contentsOf: getGroupTagChildren(groupTag: child))
-            } else {
-                children.append(child)
-            }
+    func applyModifier(viewModifier: any ViewModifier, for tag: Tag) -> Tag {
+        if let modifier = viewModifier as? HTMLRepresentable & ViewModifier {
+            return createCopyTag(
+                tag: modifier.htmlTag,
+                children: [tag]
+            ).class(add: modifier.className)
+        } else {
+            return tag.class(add: viewModifier.className)
         }
-        
-        return children
     }
-
-}
-
-protocol HTMLRepresentable {
-    
-    var parentTag: Tag { get }
-    var children: [any View] { get }
-    var childWrapper: Tag? { get }
-    
-}
-
-extension HTMLRepresentable {
-    
-    var childWrapper: Tag? { nil }
-    
+        
 }
 

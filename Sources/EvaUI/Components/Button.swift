@@ -32,7 +32,7 @@ struct Button<Label: View>: View, Identifiable, HasAction, HTMLRepresentable {
         [label]
     }
     
-    var parentTag: Tag {
+    var htmlTag: Tag {
         SwiftHtml.Button()
             .attribute("hx-post", "/eva?triggerId=\(id)")
             .attribute("hx-include", "[name='data']")

@@ -1,14 +1,13 @@
 //
-//  Group.swift
-//  
+//  ListItem.swift
 //
-//  Created by Matúš Klasovitý on 07/01/2024.
+//
+//  Created by Matúš Klasovitý on 20/01/2024.
 //
 
-import Foundation
 import SwiftHtml
 
-struct Group<Content: View>: View, HTMLRepresentable {
+struct ListItem<Content: View>: View, HTMLRepresentable {
     
     let content: Content
     
@@ -20,10 +19,10 @@ struct Group<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
+    var htmlTag: Tag = Li()
+    
     var children: [any View] {
         [content]
     }
-    
-    var htmlTag: Tag = Div()
     
 }

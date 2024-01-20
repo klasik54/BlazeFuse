@@ -35,7 +35,7 @@ struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
         ]
     }
     
-    var parentTag: Tag {
+    var htmlTag: Tag {
         Div()
         .id(id)
         .class("component")
@@ -57,7 +57,7 @@ struct HiddenInput: View, HTMLRepresentable {
         NeverView()
     }
     
-    var parentTag: Tag {
+    var htmlTag: Tag {
         Input()
             .name(name)
             .type(.hidden)

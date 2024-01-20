@@ -31,7 +31,7 @@ struct HStack<Content: View>: View, HTMLRepresentable {
         NeverView()
     }
     
-    var parentTag: Tag {
+    var htmlTag: Tag {
         Div()
             .class("flex gap-[\(spacing)px] items-\(alignment.rawValue)")
     }

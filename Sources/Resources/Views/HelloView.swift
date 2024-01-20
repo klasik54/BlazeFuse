@@ -51,6 +51,15 @@ struct HelloView: View {
                     .backgoundColor(.red400)
             }
             
+            VStack {
+                ForEach(1...5) { i in
+                    Text("List item: \(i)")
+                        .foregroundColor(.blue100)
+                        .padding(10)
+                        .backgoundColor(.blue800)
+                }
+            }
+            
             MyCustomView()
                 .padding(20)
                 .backgoundColor(.red500)

@@ -26,6 +26,6 @@ struct TupleView<T>: View, HTMLRepresentable {
         values.compactMap { $0.value as? any View }
     }
     
-    var parentTag: Tag { GroupTag() }
+    var htmlTag: Tag { GroupTag() }
     
 }
