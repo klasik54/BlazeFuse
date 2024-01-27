@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct Button<Label: View>: View, Tagable, Identifiable, HasAction {
+struct Button<Label: View>: View, Identifiable, HasAction, HTMLRepresentable {
     
     let id: String
     let label: Label
@@ -32,15 +32,13 @@ struct Button<Label: View>: View, Tagable, Identifiable, HasAction {
         [label]
     }
     
-    var tag: Tag {
-        SwiftHtml.Button {
-            ViewRenderer.shared.tagFrom(view: label)
-        }
-        .attribute("hx-post", "/eva?triggerId=\(id)")
-        .attribute("hx-include", "[name='data']")
-        .attribute("hx-target", ".component")
-        .attribute("hx-swap", "outerHTML")
-        .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+    var htmlTag: Tag {
+        SwiftHtml.Button()
+            .attribute("hx-post", "/eva?triggerId=\(id)")
+            .attribute("hx-include", "[name='data']")
+            .attribute("hx-target", ".component")
+            .attribute("hx-swap", "outerHTML")
+            .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
     }
     
 }

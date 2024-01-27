@@ -7,29 +7,16 @@
 
 import SwiftHtml
 
-struct List<Content: View>: View, Tagable {
+struct List<Content: View>: View, HTMLRepresentable {
     
     let content: Content
     
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
-        self.tag = Ul {
-            if let tupleView = content() as? AnyTupleView {
-                for child in tupleView.children {
-                    Li {
-                        ViewRenderer.shared.tagFrom(view: child)
-                    }
-                }
-            } else {
-                Li {
-                    ViewRenderer.shared.tagFrom(view: content())
-                }
-            }
-        }
     }
     
-    private init(tag: Tag, @ViewBuilder content: () -> Content) {
-        self.tag = tag
+    private init(parentTag: Tag, @ViewBuilder content: () -> Content) {
+        self.htmlTag = parentTag
         self.content = content()
     }
     
@@ -37,22 +24,22 @@ struct List<Content: View>: View, Tagable {
         NeverView()
     }
     
-    var tag: Tag
+    var htmlTag: Tag = Ul()
     
-    var children: [any View] {[
-        content
-    ]}
+    var children: [any View] {
+        [content]
+    }
     
 }
 
 extension List {
     
     func listStyle(_ style: ListStyle) -> List {
-        return List(tag: tag.listStyle(style), content: { content })
+        return List(parentTag: htmlTag.listStyle(style), content: { content })
     }
     
     func listStylePosition(_ position: ListStylePosition) -> List {
-        return List(tag: tag.listStylePosition(position), content: { content })
+        return List(parentTag: htmlTag.listStylePosition(position), content: { content })
     }
     
 }

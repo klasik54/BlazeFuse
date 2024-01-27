@@ -25,6 +25,8 @@ final class ViewRenderer {
                         .src("https://unpkg.com/htmx.org@1.9.10")
                         .integrity("sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC")
                         .crossorigin(.anonymous)
+                    Meta()
+                        .charset("UTF-8")
                 }
                 
                 Body {
@@ -46,35 +48,79 @@ final class ViewRenderer {
         
         return html
     }
+
+}
+
+// MARK: - Private
+
+private extension ViewRenderer {
     
-    func tagFrom<T: View>(view: T, classList: [String] = []) -> Tag {
-        var classList = classList
-        let mirror = Mirror(reflecting: view)
+    func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = []) -> Tag {
         if let stateFullView = view as? any StatefulView {
             StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
-        }
-        let view = if let stateFullView = view as? any StatefulView {
-            stateFullView.wrapper
+            return tagFrom(view: stateFullView.wrapper, viewModifiers: viewModifiers)
+        } else if let modifedContent = view as? AnyModifiedContent,
+            let viewModifier = modifedContent.anyModifier as? ViewModifier {
+            return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier])
+        } else if let htmlRepresentable = view as? any HTMLRepresentable & View {
+            return renderHTMLRepresentableView(view: htmlRepresentable, viewModifiers: viewModifiers)
         } else {
-            view
+            return tagFrom(view: view.body, viewModifiers: viewModifiers)
         }
-        
-        for child in mirror.children {
-            if let viewModifier = child.value as? ViewModifier {
-                classList.append(viewModifier.className)
-                if let tag = viewModifier.tag {
-                    return tag
-                        .class(add: classList.joined(separator: " "))
-                }
+    }
+    
+    func renderHTMLRepresentableView<T: View & HTMLRepresentable>(
+        view: T,
+        viewModifiers: [any ViewModifier]
+    ) -> Tag {
+        var children: [Tag] = []
+
+        for childView in view.children {
+            let passedViewModifiers: [any ViewModifier] = if view.htmlTag.node.type == .group {
+                viewModifiers
+            } else {
+                []
+            }
+
+            let childTag = tagFrom(view: childView, viewModifiers: passedViewModifiers)
+            
+            if childTag.node.type == .group {
+                children.append(contentsOf: childTag.children)
+            } else {
+                children.append(childTag)
             }
         }
         
-        if let view = view as? Tagable {
-            return view.tag
-                .class(add: classList.joined(separator: " "))
+        var resultTag = createCopyTag(tag: view.htmlTag, children: children)
+        
+        if view.htmlTag.node.type != .group {
+            for modifier in viewModifiers.reversed() {
+                resultTag = applyModifier(viewModifier: modifier, for: resultTag)
+            }
         }
-      
-        return tagFrom(view: view.body, classList: classList)
+        
+        return resultTag
     }
     
+    func createCopyTag(tag: Tag, children: [Tag]) -> Tag {
+        let tagCopy = Tag(children)
+        tagCopy.setAttributes(tag.node.attributes)
+        tagCopy.setContents(tag.node.contents)
+        tagCopy.node = tag.node
+        
+        return tagCopy
+    }
+    
+    func applyModifier(viewModifier: any ViewModifier, for tag: Tag) -> Tag {
+        if let modifier = viewModifier as? HTMLRepresentable & ViewModifier {
+            return createCopyTag(
+                tag: modifier.htmlTag,
+                children: [tag]
+            ).class(add: modifier.className)
+        } else {
+            return tag.class(add: viewModifier.className)
+        }
+    }
+        
 }
+

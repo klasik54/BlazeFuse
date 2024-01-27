@@ -7,12 +7,12 @@
 
 import SwiftHtml
 
-struct ForEach<Content: View, Data: RandomAccessCollection>: View, Tagable {
+struct ForEach<Content: View, Data: RandomAccessCollection>: View, HTMLRepresentable {
     
     let content: (Data.Element) -> Content
     let data: Data
     
-    init(_ data: Data, content: @escaping (Data.Element) -> Content) {
+    init(_ data: Data, @ViewBuilder content: @escaping (Data.Element) -> Content) {
         self.content = content
         self.data = data
     }
@@ -21,13 +21,7 @@ struct ForEach<Content: View, Data: RandomAccessCollection>: View, Tagable {
         NeverView()
     }
     
-    var tag: Tag {
-        Div {
-            for element in data {
-                ViewRenderer.shared.tagFrom(view: content(element))
-            }
-        }
-    }
+    var htmlTag: Tag = GroupTag()
     
     var children: [any View] {
         data.map { content($0) }

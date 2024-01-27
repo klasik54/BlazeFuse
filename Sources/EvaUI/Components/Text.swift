@@ -8,56 +8,46 @@
 import Foundation
 import SwiftHtml
 
-struct Text: View, Tagable {
+struct Text: View, HTMLRepresentable {
     
     let text: String
     
-    private init(text: String, tag: Tag) {
+    private init(text: String, parentTag: Tag) {
         self.text = text
-        self.tag = tag
+        self.htmlTag = parentTag
     }
     
     init(_ text: String) {
         self.text = text
-        self.tag = P(text)
+        self.htmlTag = P(text)
     }
     
     var body: some View {
         NeverView()
     }
     
-    var children: [any View] {
-        []
-    }
-    
-    var tag: Tag
+    var children: [any View] = []
+    var htmlTag: Tag
     
 }
 
 extension Text {
     
     func fontWeight(_ weight: FontWeight) -> Text {
-        return Text(text: text, tag: tag.fontWeight(weight))
+        return Text(text: text, parentTag: htmlTag.fontWeight(weight))
     }
     
     func font(_ font: Font) -> Text {
-        return Text(text: text, tag: tag.font(font))
+        return Text(text: text, parentTag: htmlTag.font(font))
     }
     
     func fontSize(_ size: FontSize) -> Text {
-        return Text(text: text, tag: tag.fontSize(size))
+        return Text(text: text, parentTag: htmlTag.fontSize(size))
     }
     
     func fontFamily(_ family: FontFamily) -> Text {
-        return Text(text: text, tag: tag.fontFamily(family))
+        return Text(text: text, parentTag: htmlTag.fontFamily(family))
     }
     
 }
 
-struct NeverView: View {
-    
-    var body: some View {
-        EmptyView()
-    }
-    
-}

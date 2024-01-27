@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct HelloView: StatefulView {
+struct HelloView: View {
  
     var props: Props
     @State var state = Data()
@@ -34,27 +34,65 @@ struct HelloView: StatefulView {
     ]
     
     var body: some View {
-        Text("Welcome!")
-            .font(.extraLargeTitle2)
-            .backgoundColor(.green700)
-            .foregroundColor(.red700)
-            .padding(30)
-            .backgoundColor(.blue700)
-        
-        VStack {
-            Text("Examples:")
+        VStack(spacing: 30) {
+            Text("👋 Welcome in BlazeFuse!")
+                .font(.largeTitle)
+                .foregroundColor(.red500)
+            
+            Text("👀 Checkout these examples:")
                 .font(.title2)
-
-            List {
-                ForEach(examples) { example in
-                    Link(href: example.href, example.title)
-                }
-                .padding(20)
-                .backgoundColor(.blue200)
+                .foregroundColor(.blue500)
+            
+            ForEach(examples) { example in
+                Link(href: example.href, example.title)
+                    .padding(10)
+                    .backgoundColor(.red300)
+                    .padding(10)
+                    .backgoundColor(.red400)
             }
-            .listStyle(.disc)
+            
+            VStack {
+                ForEach(1...5) { i in
+                    Text("List item: \(i)")
+                        .foregroundColor(.blue100)
+                        .padding(10)
+                        .backgoundColor(.blue800)
+                }
+            }
+            
+            MyCustomView()
+                .padding(20)
+                .backgoundColor(.red500)
+            
+        }.padding(30)
+    }
+    
+}
+
+struct MyCustomView: View {
+    
+    var body: some View {
+        VStack {
+            ForEach(1...3) {
+                MySecondCustomView(text: $0.description)
+                    .padding(20)
+                    .backgoundColor(.blue600)
+            }
         }
-        .padding(30)
+    }
+    
+}
+
+struct MySecondCustomView: View {
+    
+    let text: String
+    
+    var body: some View {
+        HStack {
+            Text("This is second custom view")
+            
+            Text(text)
+        }
     }
     
 }

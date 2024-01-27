@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct StatefulViewWrapper<Content: View>: View, Tagable {
+struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
     
     let id: String
     let view: Content
@@ -29,20 +29,42 @@ struct StatefulViewWrapper<Content: View>: View, Tagable {
     }
     
     var children: [any View] {
-        [view]
+        [
+            HiddenInput(name: "data", value: jsonData),
+            view
+        ]
     }
     
-    var tag: Tag {
-        Div {
-            Input()
-                .name("data")
-                .type(.hidden)
-                .value(jsonData)
-
-            ViewRenderer.shared.tagFrom(view: view)
-        }
+    var htmlTag: Tag {
+        Div()
         .id(id)
         .class("component")
     }
     
 }
+
+struct HiddenInput: View, HTMLRepresentable {
+    
+    let name: String
+    let value: String
+    
+    init(name: String, value: String) {
+        self.name = name
+        self.value = value
+    }
+    
+    var body: some View {
+        NeverView()
+    }
+    
+    var htmlTag: Tag {
+        Input()
+            .name(name)
+            .type(.hidden)
+            .value(value)
+    }
+    
+    var children: [any View] = []
+    
+}
+

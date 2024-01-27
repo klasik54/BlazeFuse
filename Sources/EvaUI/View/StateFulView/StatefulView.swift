@@ -50,7 +50,7 @@ extension StatefulView {
 func findView(by id: String, from view: some View) -> (any View)? {
     if let identifiableView = view as? any Identifiable<String>, identifiableView.id == id {
         return view
-    } else if let taggableView = view as? Tagable {
+    } else if let taggableView = view as? HTMLRepresentable {
         for view in taggableView.children {
             if let foundView = findView(by: id, from: view) {
                 return foundView
