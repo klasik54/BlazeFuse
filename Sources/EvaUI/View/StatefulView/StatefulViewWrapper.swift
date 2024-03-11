@@ -30,15 +30,16 @@ struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
     
     var children: [any View] {
         [
-            HiddenInput(name: "data", value: jsonData),
+            HiddenInput(name: "id", value: id),
+            HiddenInput(name: "state", value: jsonData),
             view
         ]
     }
     
     var htmlTag: Tag {
         Div()
-        .id(id)
-        .class("component")
+            .id(id)
+            .class("component")
     }
     
 }
@@ -59,6 +60,7 @@ struct HiddenInput: View, HTMLRepresentable {
     
     var htmlTag: Tag {
         Input()
+            .class(name)
             .name(name)
             .type(.hidden)
             .value(value)

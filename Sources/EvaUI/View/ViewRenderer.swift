@@ -21,10 +21,19 @@ final class ViewRenderer {
                     Script()
                         .src("https://cdn.tailwindcss.com")
                     
+            
+                    
                     Script()
                         .src("https://unpkg.com/htmx.org@1.9.10")
                         .integrity("sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC")
                         .crossorigin(.anonymous)
+                    
+                    Script()
+                        .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
+                    
+                    Script()
+                        .src("http://localhost:8080/script.js")
+                    
                     Meta()
                         .charset("UTF-8")
                 }
@@ -56,7 +65,9 @@ final class ViewRenderer {
 private extension ViewRenderer {
     
     func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = []) -> Tag {
-        if let stateFullView = view as? any StatefulView {
+        if let component = view as? any Component {
+            return tagFrom(view: component.wrapper())
+        } else if let stateFullView = view as? any StatefulView {
             StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
             return tagFrom(view: stateFullView.wrapper, viewModifiers: viewModifiers)
         } else if let modifedContent = view as? AnyModifiedContent,

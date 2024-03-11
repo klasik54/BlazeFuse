@@ -78,3 +78,63 @@ extension ViewBuilder {
 //    }
 //
 //}
+
+
+//@resultBuilder
+//struct ReactorViewBuilder {
+//    
+//    /// Builds an expression within the builder.
+//    static func buildExpression<Content: View & WithReactor>(_ content: Content) -> Content {
+//        content
+//    }
+//    
+//    /// Builds an empty view from a block containing no statements.
+//    static func buildBlock() -> EmptyView {
+//        EmptyView()
+//    }
+//    
+//    /// Support for optional values
+//    static func buildOptional<Content: View & WithReactor>(_ content: Content?) -> ConditionalContent<Content, EmptyView> {
+//        if let content {
+//            return ConditionalContent(trueContent: content)
+//        } else {
+//            return ConditionalContent(falseContent: EmptyView())
+//        }
+//    }
+//    
+//    /// Passes a single view written as a child view through unmodified.
+//    ///
+//    /// An example of a single view written as a child view is
+//    /// `{ Text("Hello") }`.
+//    public static func buildBlock<Content: View & WithReactor >(_ content: Content) -> Content {
+//        content
+//    }
+//
+//    static func buildBlock<each Content: View>(_ content: repeat each Content) -> TupleView<(repeat each Content)> {
+//        return TupleView(value: (repeat each content))
+//    }
+//    
+//}
+//
+//extension ReactorViewBuilder {
+//
+//    /// Provides support for “if” statements in multi-statement closures,
+//    /// producing an optional view that is visible only when the condition
+//    /// evaluates to `true`.
+//    public static func buildIf<Content: View & WithReactor>(_ content: Content?) -> Content? {
+//        content
+//    }
+//
+//    /// Provides support for "if" statements in multi-statement closures,
+//    /// producing conditional content for the "then" branch.
+//    public static func buildEither<TrueContent: View & WithReactor, FalseContent: View>(first: TrueContent) -> ConditionalContent<TrueContent, FalseContent> {
+//        ConditionalContent(trueContent: first)
+//    }
+//
+//    /// Provides support for "if-else" statements in multi-statement closures,
+//    /// producing conditional content for the "else" branch.
+//    public static func buildEither<TrueContent: View & WithReactor, FalseContent: View & WithReactor>(second: FalseContent) -> ConditionalContent<TrueContent, FalseContent> {
+//        ConditionalContent(falseContent: second)
+//    }
+//
+//}
