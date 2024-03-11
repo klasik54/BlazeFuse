@@ -66,7 +66,7 @@ private extension ViewRenderer {
     
     func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = []) -> Tag {
         if let component = view as? any Component {
-            return tagFrom(view: component.wrapper())
+            return tagFrom(view: component.wrapper(), viewModifiers: viewModifiers)
         } else if let modifedContent = view as? AnyModifiedContent,
             let viewModifier = modifedContent.anyModifier as? ViewModifier {
             return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier])

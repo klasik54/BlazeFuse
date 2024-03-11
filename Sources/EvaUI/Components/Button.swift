@@ -54,9 +54,8 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
             .attribute("id", id)
             .attribute("hx-disinherit", "*")
             .attribute("hx-post", "/eva")
-//            .attribute("hx-vals", "js:{ ...sendData(event) }")
             .attribute("hx-ext", "json-enc")
-            .attribute("hx-target", ".component")
+            .attribute("hx-target", "closest .component")
             .attribute("hx-swap", "outerHTML")
             .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
     }
