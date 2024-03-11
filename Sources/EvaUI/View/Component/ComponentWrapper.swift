@@ -1,5 +1,5 @@
 //
-//  StatefulViewWrapper.swift
+//  ComponentWrapper.swift
 //  
 //
 //  Created by Matúš Klasovitý on 14/01/2024.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftHtml
 
-struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
+struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     
     let id: String
     let view: Content
@@ -43,30 +43,3 @@ struct StatefulViewWrapper<Content: View>: View, HTMLRepresentable {
     }
     
 }
-
-struct HiddenInput: View, HTMLRepresentable {
-    
-    let name: String
-    let value: String
-    
-    init(name: String, value: String) {
-        self.name = name
-        self.value = value
-    }
-    
-    var body: some View {
-        NeverView()
-    }
-    
-    var htmlTag: Tag {
-        Input()
-            .class(name)
-            .name(name)
-            .type(.hidden)
-            .value(value)
-    }
-    
-    var children: [any View] = []
-    
-}
-

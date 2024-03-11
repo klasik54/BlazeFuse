@@ -8,30 +8,48 @@
 import Foundation
 import Hummingbird
 
-func evaUIRouteHandler(_ request: HBRequest) throws -> HBResponse {
-    let changeStateRequest = try request.decode(as: ChangeStateRequest.self)
-    let jsonString = changeStateRequest.data.replacingOccurrences(of: "&quot;", with: #"""#)
-    guard let jsonData = jsonString.data(using: .utf8) else {
-        throw HBHTTPError(.badRequest)
+struct ComponentID: Decodable {
+    
+    let id: String
+
+}
+
+func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
+    let updateComponentRawRequest = try request.decode(as: ComponentID.self)
+    let className = "BlazeFuse.\(updateComponentRawRequest.id)"
+    let viewClass: AnyClass? = NSClassFromString(className)
+    guard let objectType = viewClass as? NSObject.Type else {
+        return HBResponse(status: .internalServerError)
     }
+    let viewObject = objectType.init()
     
-    let componentId = try JSONDecoder().decode(ChangeStateRequest.JSONData.self, from: jsonData).id
-    let triggerId = request.uri.queryParameters["triggerId"]!
-    
-    let component = try StatefulViewRepository.shared.getStateFullView(by: componentId, from: jsonData)
-    let triggerView = findView(by: triggerId, from: component)
-    
-    if let actionable = triggerView as? HasAction {
-        actionable.action()
+    guard let anyComponent = viewObject as? any Component else {
+        return HBResponse(status: .internalServerError)
     }
+    let componentType = type(of: anyComponent)
     
-    let html = ViewRenderer.shared.renderComponent(component)
+    let view = await getComponent(from: viewObject, componentType: componentType, request: request)
+    
+    func getComponent<T: Component>(from nsObject: NSObject, componentType: T.Type, request: HBRequest) async -> some View {
+        guard let component = nsObject as? T else {
+            fatalError("Not Component")
+        }
+        let updateRequest = try! request.decode(as: UpdateComponentRequest<T>.self)
+        let mutatedState = await component.mutate(
+            state: updateRequest.state,
+            action: updateRequest.action
+        )
+        component.currentState = mutatedState
+
+        return component.wrapper()
+    }
     
     return HBResponse(
         status: .ok,
         headers: [
             "Content-Type": "text/html"
         ],
-        body: .byteBuffer(ByteBuffer(string: html))
+        body: .byteBuffer(ByteBuffer(string: ViewRenderer.shared.renderComponent(view)))
     )
+
 }

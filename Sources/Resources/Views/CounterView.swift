@@ -7,25 +7,48 @@
 
 import Foundation
 
-struct CounterView: StatefulView {
- 
-    var props: Props
-    @State var state = Data()
+class CounterView: NSObject, Component  {
     
-    struct Props: Codable {}
-    struct Data: Codable {
-        var count: Int = 0
+    enum Action: Codable {
+        
+        case increment
+        case decrement
+        case incrementBy(Int)
+        
     }
     
-    init(props: Props) {
-        self.props = props
+    
+    struct State: Codable {
+        
+        var count: Int
+        
     }
     
-    var tenTimesMore: Int {
-        state.count * 10
+    func onMount() -> State {
+        State(count: 1)
     }
     
-    var body: some View {
+    var currentState: State = State(count: 1)
+    
+    func mutate(state: State, action: Action) async -> State {
+        var state = state
+        
+        switch action {
+        case .increment:
+            state.count += 1
+            
+        case .decrement:
+            state.count -= 1
+            
+        case .incrementBy(let value):
+            state.count += value
+        }
+        
+        return state
+    }
+    
+    
+    func render(state: State) -> some View {
         VStack {
             Text("Counter view")
                 .font(.extraLargeTitle2)
@@ -39,23 +62,15 @@ struct CounterView: StatefulView {
                 .foregroundColor(.blue600)
            
             HStack {
-                Button {
-                    print("Decrementing \(state.count)")
-                    state.count -= 1
-                    print("Finished decrementing \(state.count)")
-                } label: {
+                Button(onClick: Action.decrement) {
                     Text("Decrement")
                 }
                 
-                Button {
-                    print("Incrementing \(state.count)")
-                    state.count += 1
-                    print("Finished incrementing \(state.count)")
-                } label: {
+                Button(onClick: Action.increment) {
                     Text("Increment")
                 }
             }
-            
+
             if state.count > 10 {
                 Text("🎉 Count is greater than 10")
                     .font(.largeTitle)
