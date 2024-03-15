@@ -9,30 +9,33 @@ import Foundation
 
 protocol Component: NSObject, View {
     
+    associatedtype Props: Codable
     associatedtype State: Codable
     associatedtype Action: Codable
     associatedtype Content: View
     
+    var props: Props { get set }
     var currentState: State { get set }
     
-    func onMount() -> State
+    func onMount(props: Props) -> State
     
     func mutate(state: State, action: Action) async -> State
     
     @ViewBuilder
-    func render(state: State) -> Content
+    func render(props: Props, state: State) -> Content
     
 }
 
 extension Component {
     
-//    init(file: String = #file, line: Int = #line) {
-//        print(file, line)
-//        self.init()
-//    }
+    init(file: String = #file, line: Int = #line, props: Props) {
+        self.init()
+        self.props = props
+        self.currentState = onMount(props: props)
+    }
     
     var body: some View {
-        render(state: onMount())
+        render(props: props, state: onMount(props: props))
     }
     
     var id: String {
@@ -43,14 +46,23 @@ extension Component {
     func wrapper() -> some View {
         ComponentWrapper(
             id: id,
-            jsonData: String(data: jsonData, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+            jsonState: makeJSONString(from: stateData),
+            jsonProps: makeJSONString(from: propsData)
         ) {
-            render(state: currentState)
+            render(props: props, state: currentState)
         }
     }
     
-    private var jsonData: Data {
+    private var stateData: Data {
         try! JSONEncoder().encode(currentState)
+    }
+    
+    private var propsData: Data {
+        try! JSONEncoder().encode(props)
+    }
+    
+    private func makeJSONString(from data: Data) -> String {
+        String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
     }
 
 }

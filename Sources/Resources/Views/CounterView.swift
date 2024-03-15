@@ -17,6 +17,7 @@ class CounterView: NSObject, Component  {
         
     }
     
+    struct Props: Codable {}
     
     struct State: Codable {
         
@@ -24,11 +25,12 @@ class CounterView: NSObject, Component  {
         
     }
     
-    func onMount() -> State {
+    func onMount(props: Props) -> State {
         State(count: 1)
     }
     
     var currentState: State = State(count: 1)
+    var props: Props = Props()
     
     func mutate(state: State, action: Action) async -> State {
         var state = state
@@ -48,7 +50,7 @@ class CounterView: NSObject, Component  {
     }
     
     
-    func render(state: State) -> some View {
+    func render(props: Props, state: State) -> some View {
         VStack {
             Text("Counter view")
                 .font(.extraLargeTitle2)
@@ -80,17 +82,20 @@ class CounterView: NSObject, Component  {
             Group {
                 Text("Inner counter")
                 
-                Xx()
-//                Xx()
+                Xx(props: .init(parentCount: state.count))
             }
-            
-            
         }.padding(30)
     }
     
 }
 
 final class Xx: NSObject, Component {
+    
+    struct Props: Codable {
+        
+        let parentCount: Int
+        
+    }
     
     enum Action: Codable {
         
@@ -103,15 +108,17 @@ final class Xx: NSObject, Component {
     
     struct State: Codable {
         
+        let parentCount: Int
         var count: Int
         
     }
     
-    func onMount() -> State {
-        State(count: 1)
+    func onMount(props: Props) -> State {
+        return State(parentCount: props.parentCount, count: 31)
     }
     
-    var currentState: State = State(count: 1)
+    var currentState: State = State(parentCount: 1, count: 1)
+    var props: Props = Props(parentCount: -32)
     
     func mutate(state: State, action: Action) async -> State {
         var state = state
@@ -130,19 +137,13 @@ final class Xx: NSObject, Component {
         return state
     }
     
-    
-    func render(state: State) -> some View {
+    func render(props: Props, state: State) -> some View {
         VStack {
-            Text("Counter view")
-                .font(.extraLargeTitle2)
-                .padding(20)
-                .backgoundColor(.red300)
-                .padding(20)
-                .backgoundColor(.red400)
-
             Text("🧮 Count: \(state.count.description)")
                 .font(.title2)
                 .foregroundColor(.blue600)
+            
+            Text("Parent Count: \(props.parentCount)")
            
             HStack {
                 Button(onClick: Action.decrement) {
@@ -159,14 +160,6 @@ final class Xx: NSObject, Component {
                     .font(.largeTitle)
                     .foregroundColor(.blue600)
             }
-            
-            Group {
-                Text("Inner counter")
-                
-                // CounterView()
-            }
-            
-            
         }.padding(30)
     }
 }

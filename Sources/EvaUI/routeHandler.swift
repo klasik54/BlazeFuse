@@ -69,6 +69,7 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
             fatalError("Not Component")
         }
         let updateRequest = try request.decode(as: UpdateComponentRequest<T>.self)
+        component.props = updateRequest.props
         let mutatedState = await component.mutate(
             state: updateRequest.state,
             action: updateRequest.action

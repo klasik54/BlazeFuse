@@ -10,6 +10,7 @@ import Foundation
 struct UpdateComponentRequest<T: Component>: Decodable {
     
     let id: String
+    let props: T.Props
     let state: T.State
     let action: T.Action
     

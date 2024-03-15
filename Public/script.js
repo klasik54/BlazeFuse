@@ -13,12 +13,10 @@ function getChildrensStates(event) {
 }
 
 function getButtonData(event) {
-  const state = JSON.parse(
-    event.target.closest('.component').querySelector("[name='state']").value
-  )
-  const id = event.target
-    .closest('.component')
-    .querySelector("[name='id']").value
+  const component = event.target.closest('.component')
+  const state = JSON.parse(component.querySelector("[name='state']").value)
+  const props = JSON.parse(component.querySelector("[name='props']").value)
+  const id = component.querySelector("[name='id']").value
 
   const action = JSON.parse(event.target.querySelector("[name='action']").value)
 
@@ -28,6 +26,7 @@ function getButtonData(event) {
 
   return {
     state: state,
+    props: props,
     id: id,
     action: action,
     childrenStates: childrenStates,

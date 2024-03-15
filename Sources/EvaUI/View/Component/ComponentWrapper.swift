@@ -12,15 +12,18 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     
     let id: String
     let view: Content
-    let jsonData: String
+    let jsonState: String
+    let jsonProps: String
     
     init(
         id: String,
-        jsonData: String,
+        jsonState: String,
+        jsonProps: String,
         @ViewBuilder view: () -> Content
     ) {
         self.id = id
-        self.jsonData = jsonData
+        self.jsonState = jsonState
+        self.jsonProps = jsonProps
         self.view = view()
     }
     
@@ -31,7 +34,8 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     var children: [any View] {
         [
             HiddenInput(name: "id", value: id),
-            HiddenInput(name: "state", value: jsonData),
+            HiddenInput(name: "state", value: jsonState),
+            HiddenInput(name: "props", value: jsonProps),
             view
         ]
     }
