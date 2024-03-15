@@ -76,7 +76,97 @@ class CounterView: NSObject, Component  {
                     .font(.largeTitle)
                     .foregroundColor(.blue600)
             }
+            
+            Group {
+                Text("Inner counter")
+                
+                Xx()
+//                Xx()
+            }
+            
+            
         }.padding(30)
     }
     
+}
+
+final class Xx: NSObject, Component {
+    
+    enum Action: Codable {
+        
+        case increment
+        case decrement
+        case incrementBy(Int)
+        
+    }
+    
+    
+    struct State: Codable {
+        
+        var count: Int
+        
+    }
+    
+    func onMount() -> State {
+        State(count: 1)
+    }
+    
+    var currentState: State = State(count: 1)
+    
+    func mutate(state: State, action: Action) async -> State {
+        var state = state
+        
+        switch action {
+        case .increment:
+            state.count += 1
+            
+        case .decrement:
+            state.count -= 1
+            
+        case .incrementBy(let value):
+            state.count += value
+        }
+        
+        return state
+    }
+    
+    
+    func render(state: State) -> some View {
+        VStack {
+            Text("Counter view")
+                .font(.extraLargeTitle2)
+                .padding(20)
+                .backgoundColor(.red300)
+                .padding(20)
+                .backgoundColor(.red400)
+
+            Text("🧮 Count: \(state.count.description)")
+                .font(.title2)
+                .foregroundColor(.blue600)
+           
+            HStack {
+                Button(onClick: Action.decrement) {
+                    Text("Decrement")
+                }
+                
+                Button(onClick: Action.increment) {
+                    Text("Increment")
+                }
+            }
+
+            if state.count > 10 {
+                Text("🎉 Count is greater than 10")
+                    .font(.largeTitle)
+                    .foregroundColor(.blue600)
+            }
+            
+            Group {
+                Text("Inner counter")
+                
+                // CounterView()
+            }
+            
+            
+        }.padding(30)
+    }
 }

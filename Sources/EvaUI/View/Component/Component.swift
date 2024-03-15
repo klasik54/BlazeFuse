@@ -15,7 +15,6 @@ protocol Component: NSObject, View {
     
     var currentState: State { get set }
     
-    
     func onMount() -> State
     
     func mutate(state: State, action: Action) async -> State
@@ -27,14 +26,23 @@ protocol Component: NSObject, View {
 
 extension Component {
     
+//    init(file: String = #file, line: Int = #line) {
+//        print(file, line)
+//        self.init()
+//    }
+    
     var body: some View {
         render(state: onMount())
+    }
+    
+    var id: String {
+        String(describing: Self.self)
     }
     
     @ViewBuilder
     func wrapper() -> some View {
         ComponentWrapper(
-            id: String(describing: Self.self),
+            id: id,
             jsonData: String(data: jsonData, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
         ) {
             render(state: currentState)

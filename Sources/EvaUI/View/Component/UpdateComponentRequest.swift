@@ -14,3 +14,10 @@ struct UpdateComponentRequest<T: Component>: Decodable {
     let action: T.Action
     
 }
+
+struct ChildrenState: Decodable {
+    
+    let id: String
+    let state: Data
+    
+}
