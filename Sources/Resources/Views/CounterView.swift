@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CounterView: NSObject, Component  {
+class CounterView: Component  {
     
     enum Action: Codable {
         
@@ -89,7 +89,7 @@ class CounterView: NSObject, Component  {
     
 }
 
-final class Xx: NSObject, Component {
+final class Xx: Component {
     
     struct Props: Codable {
         

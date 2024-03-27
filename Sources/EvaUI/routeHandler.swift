@@ -44,7 +44,7 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     }
     let viewObject = objectType.init()
     
-    guard let anyComponent = viewObject as? any Component else {
+    guard let anyComponent = viewObject as? any ComponentType else {
         return HBResponse(status: .internalServerError)
     }
     let componentType = type(of: anyComponent)
@@ -64,7 +64,7 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
         return HBResponse(status: .internalServerError)
     }
     
-    func getComponent<T: Component>(from nsObject: NSObject, componentType: T.Type, request: HBRequest) async throws -> some View {
+    func getComponent<T: ComponentType>(from nsObject: NSObject, componentType: T.Type, request: HBRequest) async throws -> some View {
         guard let component = nsObject as? T else {
             fatalError("Not Component")
         }

@@ -1,5 +1,5 @@
 //
-//  Component.swift
+//  ComponentType.swift
 //  
 //
 //  Created by Matúš Klasovitý on 11/03/2024.
@@ -7,7 +7,9 @@
 
 import Foundation
 
-protocol Component: NSObject, View {
+typealias Component = ComponentType & NSObject
+
+protocol ComponentType: NSObject, View {
     
     associatedtype Props: Codable
     associatedtype State: Codable
@@ -25,7 +27,7 @@ protocol Component: NSObject, View {
     
 }
 
-extension Component {
+extension ComponentType {
     
     init(file: String = #file, line: Int = #line, props: Props) {
         self.init()

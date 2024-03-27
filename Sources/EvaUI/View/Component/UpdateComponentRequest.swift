@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UpdateComponentRequest<T: Component>: Decodable {
+struct UpdateComponentRequest<T: ComponentType>: Decodable {
     
     let id: String
     let props: T.Props
