@@ -63,6 +63,7 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
         let component = anyComponentType.init(props: updateRequest.props)
         
         let mutatedState = await component.mutate(
+            props: updateRequest.props,
             state: updateRequest.state,
             action: updateRequest.action
         )

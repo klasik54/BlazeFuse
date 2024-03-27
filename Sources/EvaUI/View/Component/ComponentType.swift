@@ -18,7 +18,7 @@ protocol ComponentType: View {
     
     func onMount(props: Props) -> State
     
-    func mutate(state: State, action: Action) async -> State
+    func mutate(props: Props, state: State, action: Action) async -> State
     
     @ViewBuilder
     func render(props: Props, state: State) -> Content

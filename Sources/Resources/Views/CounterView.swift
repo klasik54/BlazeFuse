@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CounterView: Component<CounterView.Props> {
+final class CounterView: Component<CounterView.Props> {
     
     enum Action: Codable {
         
@@ -29,7 +29,7 @@ class CounterView: Component<CounterView.Props> {
         State(count: 12)
     }
     
-    func mutate(state: State, action: Action) async -> State {
+    func mutate(props: Props, state: State, action: Action) async -> State {
         var state = state
         
         switch action {
@@ -67,6 +67,10 @@ class CounterView: Component<CounterView.Props> {
                 
                 Button(onClick: Action.increment) {
                     Text("Increment")
+                }
+                
+                Button(onClick: Action.incrementBy(state.count)) {
+                    Text("Increment by: \(state.count)")
                 }
             }
 
@@ -112,12 +116,12 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
         return State(parentCount: props.parentCount, count: 31)
     }
     
-    func mutate(state: State, action: Action) async -> State {
+    func mutate(props: Props, state: State, action: Action) async -> State {
         var state = state
         
         switch action {
         case .multiply:
-            state.count *= 2
+            state.count *= props.parentCount
         }
         
         return state
@@ -133,9 +137,10 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
            
             HStack {
                 Button(onClick: Action.multiply) {
-                    Text("Multiple")
+                    Text("Multiple by: \(props.parentCount)")
                 }
             }
         }.padding(30)
     }
+
 }
