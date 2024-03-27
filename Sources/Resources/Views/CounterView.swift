@@ -26,10 +26,9 @@ class CounterView: NSObject, Component  {
     }
     
     func onMount(props: Props) -> State {
-        State(count: 1)
+        State(count: 12)
     }
     
-    var currentState: State = State(count: 1)
     var props: Props = Props()
     
     func mutate(state: State, action: Action) async -> State {
@@ -84,7 +83,8 @@ class CounterView: NSObject, Component  {
                 
                 Xx(props: .init(parentCount: state.count))
             }
-        }.padding(30)
+        }
+        .padding(30)
     }
     
 }
@@ -117,7 +117,6 @@ final class Xx: NSObject, Component {
         return State(parentCount: props.parentCount, count: 31)
     }
     
-    var currentState: State = State(parentCount: 1, count: 1)
     var props: Props = Props(parentCount: -32)
     
     func mutate(state: State, action: Action) async -> State {

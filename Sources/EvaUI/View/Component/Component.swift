@@ -15,7 +15,6 @@ protocol Component: NSObject, View {
     associatedtype Content: View
     
     var props: Props { get set }
-    var currentState: State { get set }
     
     func onMount(props: Props) -> State
     
@@ -31,7 +30,6 @@ extension Component {
     init(file: String = #file, line: Int = #line, props: Props) {
         self.init()
         self.props = props
-        self.currentState = onMount(props: props)
     }
     
     var body: some View {
@@ -43,19 +41,20 @@ extension Component {
     }
     
     @ViewBuilder
-    func wrapper() -> some View {
+    func wrapper(state: State) -> some View {
         ComponentWrapper(
             id: id,
-            jsonState: makeJSONString(from: stateData),
+            jsonState: makeJSONString(from: stateData(state: state)),
             jsonProps: makeJSONString(from: propsData)
         ) {
-            render(props: props, state: currentState)
+            render(props: props, state: state)
         }
     }
     
-    private var stateData: Data {
-        try! JSONEncoder().encode(currentState)
+    func stateData(state: State) -> Data {
+        try! JSONEncoder().encode(state)
     }
+    
     
     private var propsData: Data {
         try! JSONEncoder().encode(props)

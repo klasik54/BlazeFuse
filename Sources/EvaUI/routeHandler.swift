@@ -74,9 +74,9 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
             state: updateRequest.state,
             action: updateRequest.action
         )
-        component.currentState = mutatedState
+//        component.currentState = mutatedState
 
-        return component.wrapper()
+        return component.wrapper(state: mutatedState)
     }
 
 }

@@ -64,21 +64,24 @@ final class ViewRenderer {
 
 private extension ViewRenderer {
     
-    func updateComponentState<T: Component>(component: T, from data: Foundation.Data) -> T {
+    func updateComponentState<T: Component>(component: T, from data: Foundation.Data) -> some View {
         let state = try! JSONDecoder().decode(T.State.self, from: data)
-        component.currentState = state
-        
-        return component
+        return component.wrapper(state: state)
+    }
+    
+    func getDetaultComponent<T: Component>(component: T) -> some View {
+        component.wrapper(state: component.onMount(props: component.props))
     }
     
     func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = [], childrenStates: [String: Foundation.Data] = [:]) -> Tag {
         if let component = view as? any Component {
-            var component = component
-            if let componentState = childrenStates[component.id] { // childrenStates.first(where: { $0.id == component.id }) {
-                component = updateComponentState(component: component, from: componentState)
+            if let componentState = childrenStates[component.id] {
+                let wrapper = updateComponentState(component: component, from: componentState)
+                return tagFrom(view: wrapper, viewModifiers: viewModifiers, childrenStates: childrenStates)
+            } else {
+                let wrapper = getDetaultComponent(component: component)
+                return tagFrom(view: wrapper, viewModifiers: viewModifiers, childrenStates: childrenStates)
             }
-            
-            return tagFrom(view: component.wrapper(), viewModifiers: viewModifiers, childrenStates: childrenStates)
         } else if let modifedContent = view as? AnyModifiedContent,
             let viewModifier = modifedContent.anyModifier as? ViewModifier {
             return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier], childrenStates: childrenStates)
