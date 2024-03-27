@@ -44,7 +44,7 @@ enum Entrypoint {
         }
         
         app.router.get("counter") { requst in
-            return CounterView()
+            return CounterView(props: .init())
         }
         
         app.router.get("hello") { request -> String in

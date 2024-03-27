@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CounterView: Component  {
+class CounterView: Component<CounterView.Props> {
     
     enum Action: Codable {
         
@@ -28,8 +28,6 @@ class CounterView: Component  {
     func onMount(props: Props) -> State {
         State(count: 12)
     }
-    
-    var props: Props = Props()
     
     func mutate(state: State, action: Action) async -> State {
         var state = state
@@ -81,7 +79,7 @@ class CounterView: Component  {
             Group {
                 Text("Inner counter")
                 
-                Xx(props: .init(parentCount: state.count))
+                CounterMultiplier(props: .init(parentCount: state.count))
             }
         }
         .padding(30)
@@ -89,7 +87,7 @@ class CounterView: Component  {
     
 }
 
-final class Xx: Component {
+final class CounterMultiplier: Component<CounterMultiplier.Props> {
     
     struct Props: Codable {
         
@@ -99,12 +97,9 @@ final class Xx: Component {
     
     enum Action: Codable {
         
-        case increment
-        case decrement
-        case incrementBy(Int)
+        case multiply
         
     }
-    
     
     struct State: Codable {
         
@@ -117,20 +112,12 @@ final class Xx: Component {
         return State(parentCount: props.parentCount, count: 31)
     }
     
-    var props: Props = Props(parentCount: -32)
-    
     func mutate(state: State, action: Action) async -> State {
         var state = state
         
         switch action {
-        case .increment:
-            state.count += 1
-            
-        case .decrement:
-            state.count -= 1
-            
-        case .incrementBy(let value):
-            state.count += value
+        case .multiply:
+            state.count *= 2
         }
         
         return state
@@ -140,24 +127,14 @@ final class Xx: Component {
         VStack {
             Text("🧮 Count: \(state.count.description)")
                 .font(.title2)
-                .foregroundColor(.blue600)
+                .foregroundColor(.red600)
             
             Text("Parent Count: \(props.parentCount)")
            
             HStack {
-                Button(onClick: Action.decrement) {
-                    Text("Decrement")
+                Button(onClick: Action.multiply) {
+                    Text("Multiple")
                 }
-                
-                Button(onClick: Action.increment) {
-                    Text("Increment")
-                }
-            }
-
-            if state.count > 10 {
-                Text("🎉 Count is greater than 10")
-                    .font(.largeTitle)
-                    .foregroundColor(.blue600)
             }
         }.padding(30)
     }

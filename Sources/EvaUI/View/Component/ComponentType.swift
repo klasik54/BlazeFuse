@@ -7,16 +7,14 @@
 
 import Foundation
 
-typealias Component = ComponentType & NSObject
+typealias Component<Props: Codable> = ComponentType & PropsHolder<Props>
 
-protocol ComponentType: NSObject, View {
+protocol ComponentType: View {
     
     associatedtype Props: Codable
     associatedtype State: Codable
     associatedtype Action: Codable
     associatedtype Content: View
-    
-    var props: Props { get set }
     
     func onMount(props: Props) -> State
     
@@ -25,17 +23,16 @@ protocol ComponentType: NSObject, View {
     @ViewBuilder
     func render(props: Props, state: State) -> Content
     
+    func getCurrentProps() -> Props
+    
+    init(props: Props)
+    
 }
 
 extension ComponentType {
     
-    init(file: String = #file, line: Int = #line, props: Props) {
-        self.init()
-        self.props = props
-    }
-    
     var body: some View {
-        render(props: props, state: onMount(props: props))
+        render(props: getCurrentProps(), state: onMount(props: getCurrentProps()))
     }
     
     var id: String {
@@ -47,9 +44,9 @@ extension ComponentType {
         ComponentWrapper(
             id: id,
             jsonState: makeJSONString(from: stateData(state: state)),
-            jsonProps: makeJSONString(from: propsData)
+            jsonProps: makeJSONString(from: propsData(props: getCurrentProps()))
         ) {
-            render(props: props, state: state)
+            render(props: getCurrentProps(), state: state)
         }
     }
     
@@ -58,12 +55,26 @@ extension ComponentType {
     }
     
     
-    private var propsData: Data {
+    private func propsData(props: Props) -> Data {
         try! JSONEncoder().encode(props)
     }
     
     private func makeJSONString(from data: Data) -> String {
         String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+    }
+
+}
+
+class PropsHolder<Props: Codable> {
+    
+    var props: Props
+    
+    required init(props: Props) {
+        self.props = props
+    }
+    
+    func getCurrentProps() -> Props {
+        props
     }
 
 }

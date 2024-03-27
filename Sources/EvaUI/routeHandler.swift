@@ -39,18 +39,12 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     let updateComponentRawRequest = try request.decode(as: ComponentID.self)
     let className = "BlazeFuse.\(updateComponentRawRequest.id)"
     let viewClass: AnyClass? = NSClassFromString(className)
-    guard let objectType = viewClass as? NSObject.Type else {
+    guard let anyComponentType = viewClass as? any ComponentType.Type else {
         return HBResponse(status: .internalServerError)
     }
-    let viewObject = objectType.init()
-    
-    guard let anyComponent = viewObject as? any ComponentType else {
-        return HBResponse(status: .internalServerError)
-    }
-    let componentType = type(of: anyComponent)
     
     do {
-        let view = try await getComponent(from: viewObject, componentType: componentType, request: request)
+        let view = try await getComponent(from: anyComponentType, request: request)
 
         return HBResponse(
             status: .ok,
@@ -64,18 +58,15 @@ func evaUIRouteHandler(_ request: HBRequest) async throws -> HBResponse {
         return HBResponse(status: .internalServerError)
     }
     
-    func getComponent<T: ComponentType>(from nsObject: NSObject, componentType: T.Type, request: HBRequest) async throws -> some View {
-        guard let component = nsObject as? T else {
-            fatalError("Not Component")
-        }
+    func getComponent<T: ComponentType>(from anyComponentType: T.Type, request: HBRequest) async throws -> some View {
         let updateRequest = try request.decode(as: UpdateComponentRequest<T>.self)
-        component.props = updateRequest.props
+        let component = anyComponentType.init(props: updateRequest.props)
+        
         let mutatedState = await component.mutate(
             state: updateRequest.state,
             action: updateRequest.action
         )
-//        component.currentState = mutatedState
-
+        
         return component.wrapper(state: mutatedState)
     }
 

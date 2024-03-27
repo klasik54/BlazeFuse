@@ -70,7 +70,7 @@ private extension ViewRenderer {
     }
     
     func getDetaultComponent<T: ComponentType>(component: T) -> some View {
-        component.wrapper(state: component.onMount(props: component.props))
+        component.wrapper(state: component.onMount(props: component.getCurrentProps()))
     }
     
     func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = [], childrenStates: [String: Foundation.Data] = [:]) -> Tag {
