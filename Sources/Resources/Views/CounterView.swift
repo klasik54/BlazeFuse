@@ -168,6 +168,10 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
                 Button(onClick: Action.multiply) {
                     Text("Multiple by: \(props.parentCount)")
                 }
+                
+                Button(onClick: SayHelloEvent()) {
+                    Text("Say hello to parent")
+                }
             }
         }.padding(30)
     }

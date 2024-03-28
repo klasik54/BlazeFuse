@@ -50,14 +50,23 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
     }
     
     var htmlTag: Tag {
-        SwiftHtml.Button()
-            .attribute("id", id)
-            .attribute("hx-disinherit", "*")
-            .attribute("hx-post", "/eva")
-            .attribute("hx-ext", "json-enc")
-            .attribute("hx-target", "closest .component")
-            .attribute("hx-swap", "outerHTML")
-            .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+        if let event = action as? any Event {
+            SwiftHtml.Button()
+                .attribute("id", id)
+//                .attribute("class", "dispatcher")
+                .attribute("name", "dispatcher")
+                .attribute("value", type(of: event).identifier)
+                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+        } else {
+            SwiftHtml.Button()
+                .attribute("id", id)
+                .attribute("hx-disinherit", "*")
+                .attribute("hx-post", "/eva")
+                .attribute("hx-ext", "json-enc")
+                .attribute("hx-target", "closest .component")
+                .attribute("hx-swap", "outerHTML")
+                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+        }
     }
     
 }
