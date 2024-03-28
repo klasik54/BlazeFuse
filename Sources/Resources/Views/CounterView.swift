@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct SayHelloEvent: Event {}
+
+struct FooEvent: Event {
+    
+    let count: Int
+    
+}
+
 final class CounterView: Component<CounterView.Props> {
     
     enum Action: Codable {
@@ -46,6 +54,27 @@ final class CounterView: Component<CounterView.Props> {
         return state
     }
     
+    func registerListeners() -> [EventListenerType] {
+        [
+            EventListener(for: SayHelloEvent.self, listenerFunction: sayHello),
+            EventListener(for: FooEvent.self, listenerFunction: foo)
+        ]
+    }
+    
+    // @On(Event: SayHelloEvent.self)
+    func sayHello(event: SayHelloEvent, state: State) async -> State {
+        var state = state
+        state.count += 1
+        return state
+    }
+    
+    // @On(Event: FooEvent.self)
+    func foo(event: FooEvent, state: State) async -> State {
+        var state = state
+        state.count += event.count
+        
+        return state
+    }
     
     func render(props: Props, state: State) -> some View {
         VStack {

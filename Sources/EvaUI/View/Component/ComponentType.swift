@@ -20,6 +20,8 @@ protocol ComponentType: View {
     
     func mutate(props: Props, state: State, action: Action) async -> State
     
+    func registerListeners() -> [EventListenerType]
+    
     @ViewBuilder
     func render(props: Props, state: State) -> Content
     
@@ -44,7 +46,8 @@ extension ComponentType {
         ComponentWrapper(
             id: id,
             jsonState: makeJSONString(from: stateData(state: state)),
-            jsonProps: makeJSONString(from: propsData(props: getCurrentProps()))
+            jsonProps: makeJSONString(from: propsData(props: getCurrentProps())),
+            listeners: registerListeners()
         ) {
             render(props: getCurrentProps(), state: state)
         }
@@ -52,6 +55,10 @@ extension ComponentType {
     
     func stateData(state: State) -> Data {
         try! JSONEncoder().encode(state)
+    }
+    
+    func registerListeners() -> [EventListenerType] {
+        []
     }
     
     
