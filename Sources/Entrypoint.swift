@@ -36,7 +36,7 @@ enum Entrypoint {
 
         app.middleware.add(FileMiddleware())
 
-        app.router.post("eva", use: evaUIRouteHandler)
+        app.router.post("fuse/action", use: fuseActionRouteHandler)
         app.router.post("fuse/event", use: fuseEventRouteHandler)
 
         

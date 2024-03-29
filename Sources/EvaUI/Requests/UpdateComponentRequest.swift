@@ -9,16 +9,8 @@ import Foundation
 
 struct UpdateComponentRequest<T: ComponentType>: Decodable {
     
-    let id: String
     let props: T.Props
     let state: T.State
     let action: T.Action
-    
-}
-
-struct ChildrenState: Decodable {
-    
-    let id: String
-    let state: Data
     
 }

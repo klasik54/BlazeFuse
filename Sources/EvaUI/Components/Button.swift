@@ -62,7 +62,7 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
             SwiftHtml.Button()
                 .attribute("id", id)
                 .attribute("hx-disinherit", "*")
-                .attribute("hx-post", "/eva")
+                .attribute("hx-post", "/fuse/action")
                 .attribute("hx-ext", "json-enc")
                 .attribute("hx-target", "closest .component")
                 .attribute("hx-swap", "outerHTML")
