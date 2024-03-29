@@ -8,13 +8,20 @@
 import Foundation
 import SwiftHtml
 
-struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentable {
+struct Button<Label: View>: View, Identifiable, HTMLRepresentable {
     
     let id: String
     let label: Label
-    let action: Action
+    let handler: Handler
     
-    init(file: String = #file, line: Int = #line, onClick: Action, @ViewBuilder label: () -> Label) {
+    enum Handler {
+        
+        case trigger(any Codable)
+        case dispatch(any Event)
+        
+    }
+    
+    init(file: String = #file, line: Int = #line, onClick: Handler, @ViewBuilder label: () -> Label) {
         var hasher = Hasher()
         hasher.combine(file)
         hasher.combine(line)
@@ -30,7 +37,7 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
         self.id = id
     
         self.label = label()
-        self.action = onClick
+        self.handler = onClick
     }
     
     var body: some View {
@@ -45,20 +52,21 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
     }
     
     var encodedAction: String {
-        let data = try! JSONEncoder().encode(action)
-        return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+        switch handler {
+        case .trigger(let action):
+            let data = try! JSONEncoder().encode(action)
+            return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+
+        case .dispatch(let event):
+            let data = try! JSONEncoder().encode(event)
+            return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+        }
+   
     }
     
     var htmlTag: Tag {
-        if let event = action as? any Event {
-            SwiftHtml.Button()
-                .attribute("id", id)
-//                .attribute("class", "dispatcher")
-                .attribute("name", "dispatcher")
-                .attribute("value", type(of: event).identifier)
-                .attribute("data", encodedAction)
-                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
-        } else {
+        switch handler {
+        case .trigger:
             SwiftHtml.Button()
                 .attribute("id", id)
                 .attribute("hx-disinherit", "*")
@@ -66,6 +74,14 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
                 .attribute("hx-ext", "json-enc")
                 .attribute("hx-target", "closest .component")
                 .attribute("hx-swap", "outerHTML")
+                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+
+        case .dispatch(let event):
+            SwiftHtml.Button()
+                .attribute("id", id)
+                .attribute("name", "dispatcher")
+                .attribute("value", type(of: event).identifier)
+                .attribute("data", encodedAction)
                 .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
         }
     }

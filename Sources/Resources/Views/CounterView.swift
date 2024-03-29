@@ -92,22 +92,22 @@ final class CounterView: Component<CounterView.Props> {
                 .foregroundColor(.blue600)
            
             HStack {
-                Button(onClick: Action.decrement) {
+                Button(onClick: .trigger(Action.decrement)) {
                     Text("Decrement")
                 }
                 
-                Button(onClick: Action.increment) {
+                Button(onClick: .trigger(Action.increment)) {
                     Text("Increment")
                 }
                 
-                Button(onClick: Action.incrementBy(state.count)) {
+                Button(onClick: .trigger(Action.incrementBy(state.count))) {
                     Text("Increment by: \(state.count)")
                 }
             }
                 
-                if let helloText = state.helloText {
-                    Text("Parent said: \(helloText)")
-                }
+            if let helloText = state.helloText {
+                Text("Parent said: \(helloText)")
+            }
                 
 
             if state.count > 10 {
@@ -176,19 +176,19 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
             Text("Parent Count: \(props.parentCount)")
            
             HStack {
-                Button(onClick: Action.multiply) {
+                Button(onClick: .trigger(Action.multiply)) {
                     Text("Multiple by: \(props.parentCount)")
                 }
                 
-                Button(onClick: SayHelloEvent()) {
+                Button(onClick: .dispatch(SayHelloEvent())) {
                     Text("Say hello to parent")
                 }
                 
-                Button(onClick: FooEvent(count: state.count)) {
+                Button(onClick: .dispatch(FooEvent(count: state.count))) {
                     Text("Set parent count to: \(state.count)")
                 }
                 
-                Button(onClick: Action.reset) {
+                Button(onClick: .trigger(Action.reset)) {
                     Text("Reset counter")
                 }
             }
