@@ -30,6 +30,7 @@ final class CounterView: Component<CounterView.Props> {
     struct State: Codable {
         
         var count: Int
+        var helloText: String? = nil
         
     }
     
@@ -56,22 +57,23 @@ final class CounterView: Component<CounterView.Props> {
     
     func registerListeners() -> [EventListenerType] {
         [
+            EventListener(for: FooEvent.self, listenerFunction: foo),
             EventListener(for: SayHelloEvent.self, listenerFunction: sayHello),
-            EventListener(for: FooEvent.self, listenerFunction: foo)
         ]
     }
     
     // @On(Event: SayHelloEvent.self)
     func sayHello(event: SayHelloEvent, state: State) async -> State {
         var state = state
-        state.count += 1
+        state.helloText = "Hello from child!"
+
         return state
     }
     
     // @On(Event: FooEvent.self)
     func foo(event: FooEvent, state: State) async -> State {
         var state = state
-        state.count += event.count
+        state.count = event.count
         
         return state
     }
@@ -102,6 +104,11 @@ final class CounterView: Component<CounterView.Props> {
                     Text("Increment by: \(state.count)")
                 }
             }
+                
+                if let helloText = state.helloText {
+                    Text("Parent said: \(helloText)")
+                }
+                
 
             if state.count > 10 {
                 Text("🎉 Count is greater than 10")
@@ -131,6 +138,7 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
     enum Action: Codable {
         
         case multiply
+        case reset
         
     }
     
@@ -151,6 +159,9 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
         switch action {
         case .multiply:
             state.count *= props.parentCount
+            
+        case .reset:
+            state.count = 0
         }
         
         return state
@@ -171,6 +182,14 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
                 
                 Button(onClick: SayHelloEvent()) {
                     Text("Say hello to parent")
+                }
+                
+                Button(onClick: FooEvent(count: state.count)) {
+                    Text("Set parent count to: \(state.count)")
+                }
+                
+                Button(onClick: Action.reset) {
+                    Text("Reset counter")
                 }
             }
         }.padding(30)

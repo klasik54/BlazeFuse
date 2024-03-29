@@ -26,7 +26,6 @@ function getButtonData(event) {
 
   // getChildrensStates(event)
   const childrenStates = getChildrensStates(event)
-  console.log(childrenStates)
 
   return {
     state: state,
@@ -38,36 +37,52 @@ function getButtonData(event) {
 }
 
 document.body.addEventListener('htmx:configRequest', function (event) {
-  if (event.target.tagName === 'BUTTON') {
-    event.detail.parameters = getButtonData(event)
-  }
+    console.log("htmx:configRequest", event)
+    
+    // Add Request Data For Event
+    if(event.target.tagName === "INPUT" && event.target.getAttribute("name") === "listener") {
+        event.detail.parameters = getEventData(event)
+    }
+    
+    // Add Request Data For Action
+    if (event.target.tagName === 'BUTTON') {
+        event.detail.parameters = getButtonData(event)
+    }
+})
+
+document.body.addEventListener("htmx:afterSwap", function(event) {
+    registerEventDispatchersOn(event.target)
 })
 
 function onMount() {
-    registerEventDispatchers()
-    registerListeners()
+    registerEventDispatchersOn(document)
 }
 
 // Events
-
-function registerListeners() {
-    document.querySelectorAll("[name='listener']").forEach((element) => {
-        const parent = element.closest('.component')
-//        console.log("Registering listener", "for event", element.value)
-        parent.addEventListener(element.value, (event) => {
-            console.log("Triggered event", event)
-        })
-    })
+function getEventData(event) {
+    const eventPayload = event.detail.triggeringEvent.detail
+    const component = event.target.closest('.component')
+    const id = component.querySelector("[name='id']").value
+    const state = JSON.parse(component.querySelector("[name='state']").value)
+    const props = JSON.parse(component.querySelector("[name='props']").value)
+    const childrenStates = getChildrensStates(event)
+    
+    return {
+        id: id,
+        props: props,
+        eventPayload: btoa(JSON.stringify(eventPayload)),
+        eventName: event.detail.triggeringEvent.type,
+        state: state,
+        childrenStates: childrenStates
+    }
 }
 
-function registerEventDispatchers() {
-//    console.log("Registering event dispatchers")
-    document.querySelectorAll("[name='dispatcher']").forEach((element) => {
-//        console.log("Registering event dispatcher", element)
-        
+function registerEventDispatchersOn(element) {
+    element.querySelectorAll("[name='dispatcher']").forEach((element) => {
         element.addEventListener('click', (event) => {
-            console.log("Dispatching event", element.value)
-            event.target.dispatchEvent(new CustomEvent(element.value, { bubbles: true }))
+//            console.log("Dispatching event", element.value, JSON.parse(element.getAttribute("data")))
+            const eventData = JSON.parse(element.getAttribute("data"))
+            event.target.dispatchEvent(new CustomEvent(element.value, { bubbles: true, detail: eventData }))
         })
     })
 }

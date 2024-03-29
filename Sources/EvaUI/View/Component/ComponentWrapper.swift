@@ -43,7 +43,10 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
         ]
         
         for listener in listeners {
-            views.append(HiddenInput(name: "listener", value: listener.eventIdentifier))
+            views.append(
+                EventListenerInput(listener: listener)
+                // HiddenInput(name: "listener", value: listener.eventIdentifier)
+            )
         }
         
         return views
@@ -54,5 +57,35 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
             .id(id)
             .class("component")
     }
+    
+}
+
+
+struct EventListenerInput: View, HTMLRepresentable {
+    
+    let listener: any EventListenerType
+    
+    init(listener: any EventListenerType) {
+        self.listener = listener
+    }
+    
+    var body: some View {
+        NeverView()
+    }
+    
+    var htmlTag: Tag {
+        Input()
+            .name("listener")
+            .type(.hidden)
+            .value(listener.eventIdentifier)
+            .attribute("hx-disinherit", "*")
+            .attribute("hx-trigger", "\(listener.eventIdentifier) from:document")
+            .attribute("hx-post", "/fuse/event")
+            .attribute("hx-target", "closest .component")
+            .attribute("hx-swap", "outerHTML")
+            .attribute("hx-ext", "json-enc")
+    }
+    
+    var children: [any View] = []
     
 }

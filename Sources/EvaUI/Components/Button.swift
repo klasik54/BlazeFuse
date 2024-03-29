@@ -56,6 +56,7 @@ struct Button<Label: View, Action: Codable>: View, Identifiable, HTMLRepresentab
 //                .attribute("class", "dispatcher")
                 .attribute("name", "dispatcher")
                 .attribute("value", type(of: event).identifier)
+                .attribute("data", encodedAction)
                 .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
         } else {
             SwiftHtml.Button()

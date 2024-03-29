@@ -10,6 +10,7 @@ import Foundation
 protocol EventListenerType {
     
     var eventIdentifier: String { get }
+    var anyEventType: any Event.Type { get }
     
 }
 
@@ -25,6 +26,10 @@ struct EventListener<E: Event, State: Codable>: EventListenerType {
     
     var eventIdentifier: String {
         E.identifier
+    }
+    
+    var anyEventType: any Event.Type {
+        E.self
     }
     
 }
