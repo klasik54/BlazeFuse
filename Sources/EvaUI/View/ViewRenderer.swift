@@ -75,7 +75,7 @@ private extension ViewRenderer {
     
     func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = [], childrenStates: [String: Foundation.Data] = [:]) -> Tag {
         if let component = view as? any ComponentType {
-            if let componentState = childrenStates[component.id] {
+            if let componentState = childrenStates[component.getId()] {
                 let wrapper = updateComponentState(component: component, from: componentState)
                 return tagFrom(view: wrapper, viewModifiers: viewModifiers, childrenStates: childrenStates)
             } else {

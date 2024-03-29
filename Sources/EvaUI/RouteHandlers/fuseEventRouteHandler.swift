@@ -10,14 +10,14 @@ import Hummingbird
 
 func fuseEventRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     let fuseRequest = try request.decode(as: FuseRequest.self)
-    let className = "BlazeFuse.\(fuseRequest.componentId)"
+    let className = "BlazeFuse.\(fuseRequest.componentName)"
     let viewClass: AnyClass? = NSClassFromString(className)
     guard let anyComponentType = viewClass as? any ComponentType.Type else {
         return HBResponse(status: .internalServerError)
     }
     
     do {
-        let view = try await triggerEventOnComponent(from: anyComponentType, request: request)
+        let view = try await triggerEventOnComponent(from: anyComponentType, componentId: fuseRequest.componentId, request: request)
 
         return HBResponse(
             status: .ok,
@@ -33,9 +33,9 @@ func fuseEventRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     
 }
 
-fileprivate func triggerEventOnComponent<T: ComponentType>(from anyComponentType: T.Type, request: HBRequest) async throws -> some View {
+fileprivate func triggerEventOnComponent<T: ComponentType>(from anyComponentType: T.Type, componentId: String, request: HBRequest) async throws -> some View {
     let triggerEventRequest = try request.decode(as: TriggerEventRequest<T>.self)
-    let component = anyComponentType.init(props: triggerEventRequest.props)
+    let component = anyComponentType.init(id: componentId, props: triggerEventRequest.props)
     let listeners = component.registerListeners()
     let eventListenerType = listeners.first { eventListenerType in
         if eventListenerType.eventIdentifier == triggerEventRequest.eventName {

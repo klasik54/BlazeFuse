@@ -10,14 +10,14 @@ import Hummingbird
 
 func fuseActionRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     let fuseRequest = try request.decode(as: FuseRequest.self)
-    let className = "BlazeFuse.\(fuseRequest.componentId)"
+    let className = "BlazeFuse.\(fuseRequest.componentName)"
     let viewClass: AnyClass? = NSClassFromString(className)
     guard let anyComponentType = viewClass as? any ComponentType.Type else {
         return HBResponse(status: .internalServerError)
     }
     
     do {
-        let view = try await getComponent(from: anyComponentType, request: request)
+        let view = try await getComponent(from: anyComponentType, componentId: fuseRequest.componentId, request: request)
 
         return HBResponse(
             status: .ok,
@@ -32,9 +32,9 @@ func fuseActionRouteHandler(_ request: HBRequest) async throws -> HBResponse {
     }
 }
 
-fileprivate func getComponent<T: ComponentType>(from anyComponentType: T.Type, request: HBRequest) async throws -> some View {
+fileprivate func getComponent<T: ComponentType>(from anyComponentType: T.Type, componentId: String, request: HBRequest) async throws -> some View {
     let updateRequest = try request.decode(as: UpdateComponentRequest<T>.self)
-    let component = anyComponentType.init(props: updateRequest.props)
+    let component = anyComponentType.init(id: componentId, props: updateRequest.props)
     
     let mutatedState = await component.mutate(
         props: updateRequest.props,

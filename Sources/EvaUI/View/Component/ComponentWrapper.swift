@@ -11,6 +11,7 @@ import SwiftHtml
 struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     
     let id: String
+    let name: String
     let view: Content
     let jsonState: String
     let jsonProps: String
@@ -18,12 +19,14 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     
     init(
         id: String,
+        name: String,
         jsonState: String,
         jsonProps: String,
         listeners: [EventListenerType],
         @ViewBuilder view: () -> Content
     ) {
         self.id = id
+        self.name = name
         self.jsonState = jsonState
         self.jsonProps = jsonProps
         self.listeners = listeners
@@ -36,7 +39,6 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     
     var children: [any View] {
         var views: [any View] = [
-            HiddenInput(name: "id", value: id),
             HiddenInput(name: "state", value: jsonState),
             HiddenInput(name: "props", value: jsonProps),
             view
@@ -45,7 +47,6 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
         for listener in listeners {
             views.append(
                 EventListenerInput(listener: listener)
-                // HiddenInput(name: "listener", value: listener.eventIdentifier)
             )
         }
         
@@ -55,6 +56,7 @@ struct ComponentWrapper<Content: View>: View, HTMLRepresentable {
     var htmlTag: Tag {
         Div()
             .id(id)
+            .attribute("name", name)
             .class("component")
     }
     

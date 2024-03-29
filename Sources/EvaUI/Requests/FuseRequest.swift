@@ -10,11 +10,13 @@ import Foundation
 struct FuseRequest: Decodable {
     
     let componentId: String
+    let componentName: String
     let childrenStates: [String: Data]
     
     enum CodingKeys: String, CodingKey {
         
         case componentId
+        case componentName
         case childrenStates
         
     }
@@ -22,6 +24,7 @@ struct FuseRequest: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.componentId = try container.decode(String.self, forKey: .componentId)
+        self.componentName = try container.decode(String.self, forKey: .componentName)
         let childrenStates = try container.decode([ChildrenState].self, forKey: .childrenStates)
         
         var items = [String: Data]()

@@ -19,13 +19,15 @@ function getBaseComponentData(event) {
     const component = event.target.closest('.component')
     const state = JSON.parse(component.querySelector("[name='state']").value)
     const props = JSON.parse(component.querySelector("[name='props']").value)
-    const componentId = component.querySelector("[name='id']").value
+    const componentId = component.id // component.querySelector("[name='id']").value
+    const componentName = component.getAttribute("name")
     const childrenStates = getChildrensStates(event)
 
     return {
         state,
         props,
         componentId,
+        componentName,
         childrenStates
     }
 }

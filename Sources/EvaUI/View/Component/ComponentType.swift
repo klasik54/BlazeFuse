@@ -26,8 +26,10 @@ protocol ComponentType: View {
     func render(props: Props, state: State) -> Content
     
     func getCurrentProps() -> Props
+    func getId() -> String
     
-    init(props: Props)
+    init(line: Int, file: String, props: Props)
+    init(id: String, props: Props)
     
 }
 
@@ -37,14 +39,11 @@ extension ComponentType {
         render(props: getCurrentProps(), state: onMount(props: getCurrentProps()))
     }
     
-    var id: String {
-        String(describing: Self.self)
-    }
-    
     @ViewBuilder
     func wrapper(state: State) -> some View {
         ComponentWrapper(
-            id: id,
+            id: getId(),
+            name: String(describing: Self.self),
             jsonState: makeJSONString(from: stateData(state: state)),
             jsonProps: makeJSONString(from: propsData(props: getCurrentProps())),
             listeners: registerListeners()
@@ -75,13 +74,32 @@ extension ComponentType {
 class PropsHolder<Props: Codable> {
     
     var props: Props
+    var id: String
     
-    required init(props: Props) {
+    required init(line: Int = #line, file: String = #file, props: Props) {
         self.props = props
+        self.id = Self.generateId(line: line, file: file)
+    }
+    
+    required init(id: String, props: Props) {
+        self.props = props
+        self.id = id
     }
     
     func getCurrentProps() -> Props {
         props
+    }
+    
+    func getId() -> String {
+        id
+    }
+    
+    private static func generateId(line: Int, file: String) -> String {
+        var hasher = Hasher()
+        hasher.combine(file)
+        hasher.combine(line)
+        
+        return String(hasher.finalize())
     }
 
 }

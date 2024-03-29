@@ -8,9 +8,8 @@
 import Foundation
 import SwiftHtml
 
-struct Button<Label: View>: View, Identifiable, HTMLRepresentable {
+struct Button<Label: View>: View, HTMLRepresentable {
     
-    let id: String
     let label: Label
     let handler: Handler
     
@@ -21,21 +20,7 @@ struct Button<Label: View>: View, Identifiable, HTMLRepresentable {
         
     }
     
-    init(file: String = #file, line: Int = #line, onClick: Handler, @ViewBuilder label: () -> Label) {
-        var hasher = Hasher()
-        hasher.combine(file)
-        hasher.combine(line)
-        let uuidString = UUID().uuidString
-        
-        var id = ""
-        
-        for character in uuidString {
-            if !character.isNumber {
-                id.append(character)
-            }
-        }
-        self.id = id
-    
+    init(onClick: Handler, @ViewBuilder label: () -> Label) {
         self.label = label()
         self.handler = onClick
     }
@@ -68,7 +53,6 @@ struct Button<Label: View>: View, Identifiable, HTMLRepresentable {
         switch handler {
         case .trigger:
             SwiftHtml.Button()
-                .attribute("id", id)
                 .attribute("hx-disinherit", "*")
                 .attribute("hx-post", "/fuse/action")
                 .attribute("hx-ext", "json-enc")
@@ -78,7 +62,6 @@ struct Button<Label: View>: View, Identifiable, HTMLRepresentable {
 
         case .dispatch(let event):
             SwiftHtml.Button()
-                .attribute("id", id)
                 .attribute("name", "dispatcher")
                 .attribute("value", type(of: event).identifier)
                 .attribute("data", encodedAction)
