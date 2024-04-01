@@ -16,6 +16,7 @@ function getChildrensStates(event) {
 }
 
 function getBaseComponentData(event) {
+    console.log("Event", event.target)
     const component = event.target.closest('.component')
     const state = JSON.parse(component.querySelector("[name='state']").value)
     const props = JSON.parse(component.querySelector("[name='props']").value)
@@ -43,12 +44,14 @@ function getActionData(event) {
 }
 
 document.body.addEventListener('htmx:configRequest', function (event) {
-    console.log("htmx:configRequest", event)
+//    console.log(htmx.closest(event.target, `.listener-${event}`), `.component:not(#\\${event.target.id})`)
+//    console.log("htmx:configRequest", htmx.closest(event.target, `.listener :not(#\\${event.target.id})`))
+
     
     // Add Request Data For Event
-    if(event.target.tagName === "INPUT" && event.target.getAttribute("name") === "listener") {
-        event.detail.parameters = getEventData(event)
-    }
+//    if(event.target.tagName === "INPUT" && event.target.getAttribute("name") === "listener") {
+        // event.detail.parameters = getEventData(event)
+//    }
     
     // Add Request Data For Action
     if (event.target.tagName === 'BUTTON') {
@@ -77,9 +80,55 @@ function getEventData(event) {
 
 function registerEventDispatchersOn(element) {
     element.querySelectorAll("[name='dispatcher']").forEach((element) => {
-        element.addEventListener('click', (event) => {
+        element.addEventListener('click', async (event) => {
             const eventData = JSON.parse(element.getAttribute("data"))
-            event.target.dispatchEvent(new CustomEvent(element.value, { bubbles: true, detail: eventData }))
+            const listeners = document.querySelectorAll(`.listener-${element.value}`)
+        
+            const reversedListeners = Array.from(listeners).reverse()
+            
+            for (const listener of reversedListeners) {
+                await htmx.ajax("POST", "/fuse/event", {
+                    target: listener,
+                    swap: "outerHTML",
+                    source: listener,
+                    values: {
+                        eventPayload: btoa(JSON.stringify(eventData)),
+                        eventName: element.value,
+                        ...getDatas(listener)
+                    }
+                })
+            }
         })
     })
+}
+
+
+function getDatas(component) {
+    const state = JSON.parse(component.querySelector("[name='state']").value)
+    const props = JSON.parse(component.querySelector("[name='props']").value)
+    const componentId = component.id // component.querySelector("[name='id']").value
+    const componentName = component.getAttribute("name")
+    const childrenStates = otherChildren(component)
+    
+    return {
+        state,
+        props,
+        componentId,
+        componentName,
+        childrenStates: childrenStates
+    }
+}
+
+function otherChildren(parent) {
+//    const parent = event.target.closest('.component')
+    const children = parent.querySelectorAll('.component')
+    let childrenStates = []
+
+    for (let i = 0; i < children.length; i++) {
+        const childId = children[i].id
+        const state = JSON.parse(children[i].querySelector("[name='state']").value)
+        childrenStates.push({ id: childId, state: btoa(JSON.stringify(state)) })
+    }
+
+    return childrenStates
 }

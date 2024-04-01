@@ -120,6 +120,10 @@ final class CounterView: Component<CounterView.Props> {
                 Text("Inner counter")
                 
                 CounterMultiplier(props: .init(parentCount: state.count))
+                
+                CounterMultiplier(props: .init(parentCount: state.count * 2))
+                
+                Receiver(props: .init())
             }
         }
         .padding(30)
@@ -137,6 +141,8 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
     
     enum Action: Codable {
         
+        case increment
+        case decrement
         case multiply
         case reset
         
@@ -160,6 +166,12 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
         case .multiply:
             state.count *= props.parentCount
             
+        case .increment:
+            state.count += 1
+            
+        case .decrement:
+            state.count -= 1
+
         case .reset:
             state.count = 0
         }
@@ -191,8 +203,63 @@ final class CounterMultiplier: Component<CounterMultiplier.Props> {
                 Button(onClick: .trigger(Action.reset)) {
                     Text("Reset counter")
                 }
+                
+                Button(onClick: .trigger(Action.increment)) {
+                    Text("Increment")
+                }
+                
+                Button(onClick: .trigger(Action.decrement)) {
+                    Text("Decrement")
+                }
             }
         }.padding(30)
+    }
+
+}
+
+
+final class Receiver: Component<Receiver.Props> {
+    
+    enum Action: Codable {
+        
+       case action
+        
+    }
+    
+    struct Props: Codable {}
+    
+    struct State: Codable {
+        
+        var count: Int
+        
+    }
+    
+    func registerListeners() -> [EventListenerType] {
+        [
+            EventListener(for: FooEvent.self, listenerFunction: onCountChange)
+        ]
+    }
+    
+    func onCountChange(event: FooEvent, state: State) -> State {
+        var state = state
+        state.count = event.count
+        
+        return state
+    }
+    
+    
+    func onMount(props: Props) -> State {
+        State(count: 0)
+    }
+    
+    func mutate(props: Props, state: State, action: Action) async -> State {
+        return state
+    }
+    
+    func render(props: Props, state: State) -> some View {
+        HStack {
+            Text("I have this count: \(state.count)")
+        }
     }
 
 }
