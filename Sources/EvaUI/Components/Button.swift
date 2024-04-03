@@ -30,10 +30,7 @@ struct Button<Label: View>: View, HTMLRepresentable {
     }
     
     var children: [any View] {
-        [
-            HiddenInput(name: "action", value: encodedAction),
-            label
-        ]
+        [label]
     }
     
     var encodedAction: String {
@@ -46,25 +43,26 @@ struct Button<Label: View>: View, HTMLRepresentable {
             let data = try! JSONEncoder().encode(event)
             return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
         }
-   
     }
     
     var htmlTag: Tag {
         switch handler {
         case .trigger:
             SwiftHtml.Button()
+                .attribute("data-node-type", "trigger")
+                .attribute("data-action-data", encodedAction)
                 .attribute("hx-disinherit", "*")
                 .attribute("hx-post", "/fuse/action")
                 .attribute("hx-ext", "json-enc")
-                .attribute("hx-target", "closest .component")
+                .attribute("hx-target", "closest [data-node-type='component']")
                 .attribute("hx-swap", "outerHTML")
                 .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
 
         case .dispatch(let event):
             SwiftHtml.Button()
-                .attribute("name", "dispatcher")
-                .attribute("value", type(of: event).identifier)
-                .attribute("data", encodedAction)
+                .attribute("data-node-type", "dispatcher")
+                .attribute("data-event-name", type(of: event).identifier)
+                .attribute("data-event-data", encodedAction)
                 .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
         }
     }

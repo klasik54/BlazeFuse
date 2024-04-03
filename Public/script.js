@@ -1,28 +1,25 @@
 onMount()
 
 // State
-function getChildrensStates(event) {
-    const parent = event.target.closest('.component')
-    const children = parent.querySelectorAll('.component')
+function getChildrensStates(component) {
+    const children = component.querySelectorAll("[data-node-type='component']")
     let childrenStates = []
 
     for (let i = 0; i < children.length; i++) {
         const childId = children[i].id
-        const state = JSON.parse(children[i].querySelector("[name='state']").value)
+        const state = JSON.parse(children[i].dataset.state)
         childrenStates.push({ id: childId, state: btoa(JSON.stringify(state)) })
     }
 
     return childrenStates
 }
 
-function getBaseComponentData(event) {
-    console.log("Event", event.target)
-    const component = event.target.closest('.component')
-    const state = JSON.parse(component.querySelector("[name='state']").value)
-    const props = JSON.parse(component.querySelector("[name='props']").value)
-    const componentId = component.id // component.querySelector("[name='id']").value
-    const componentName = component.getAttribute("name")
-    const childrenStates = getChildrensStates(event)
+function getComponentData(component) {
+    const state = JSON.parse(component.dataset.state)
+    const props = JSON.parse(component.dataset.props)
+    const componentId = component.id
+    const componentName = component.dataset.name
+    const childrenStates = getChildrensStates(component)
 
     return {
         state,
@@ -33,28 +30,24 @@ function getBaseComponentData(event) {
     }
 }
 
+function getComponentFromEvent(event) {
+    return event.target.closest("[data-node-type='component']")
+}
+
 // Action dispatching
 function getActionData(event) {
-    const action = JSON.parse(event.target.querySelector("[name='action']").value)
+    const action = JSON.parse(event.target.dataset.actionData)
+    const component = getComponentFromEvent(event)
 
     return {
-        ...getBaseComponentData(event),
+        ...getComponentData(component),
         action: action
     }
 }
 
 document.body.addEventListener('htmx:configRequest', function (event) {
-//    console.log(htmx.closest(event.target, `.listener-${event}`), `.component:not(#\\${event.target.id})`)
-//    console.log("htmx:configRequest", htmx.closest(event.target, `.listener :not(#\\${event.target.id})`))
-
-    
-    // Add Request Data For Event
-//    if(event.target.tagName === "INPUT" && event.target.getAttribute("name") === "listener") {
-        // event.detail.parameters = getEventData(event)
-//    }
-    
     // Add Request Data For Action
-    if (event.target.tagName === 'BUTTON') {
+    if (event.target.dataset.nodeType === "trigger") {
         event.detail.parameters = getActionData(event)
     }
 })
@@ -68,22 +61,12 @@ function onMount() {
 }
 
 // Events
-function getEventData(event) {
-    const eventPayload = event.detail.triggeringEvent.detail
-
-    return {
-        ...getBaseComponentData(event),
-        eventPayload: btoa(JSON.stringify(eventPayload)),
-        eventName: event.detail.triggeringEvent.type
-    }
-}
-
 function registerEventDispatchersOn(element) {
-    element.querySelectorAll("[name='dispatcher']").forEach((element) => {
+    element.querySelectorAll("[data-node-type='dispatcher']").forEach((element) => {
         element.addEventListener('click', async (event) => {
-            const eventData = JSON.parse(element.getAttribute("data"))
-            const listeners = document.querySelectorAll(`.listener-${element.value}`)
-        
+            const eventName = element.dataset.eventName
+            const eventData = JSON.parse(element.dataset.eventData)
+            const listeners = document.querySelectorAll(`.listener-${eventName}`)
             const reversedListeners = Array.from(listeners).reverse()
             
             for (const listener of reversedListeners) {
@@ -93,42 +76,11 @@ function registerEventDispatchersOn(element) {
                     source: listener,
                     values: {
                         eventPayload: btoa(JSON.stringify(eventData)),
-                        eventName: element.value,
-                        ...getDatas(listener)
+                        eventName: eventName,
+                        ...getComponentData(listener)
                     }
                 })
             }
         })
     })
-}
-
-
-function getDatas(component) {
-    const state = JSON.parse(component.querySelector("[name='state']").value)
-    const props = JSON.parse(component.querySelector("[name='props']").value)
-    const componentId = component.id // component.querySelector("[name='id']").value
-    const componentName = component.getAttribute("name")
-    const childrenStates = otherChildren(component)
-    
-    return {
-        state,
-        props,
-        componentId,
-        componentName,
-        childrenStates: childrenStates
-    }
-}
-
-function otherChildren(parent) {
-//    const parent = event.target.closest('.component')
-    const children = parent.querySelectorAll('.component')
-    let childrenStates = []
-
-    for (let i = 0; i < children.length; i++) {
-        const childId = children[i].id
-        const state = JSON.parse(children[i].querySelector("[name='state']").value)
-        childrenStates.push({ id: childId, state: btoa(JSON.stringify(state)) })
-    }
-
-    return childrenStates
 }
