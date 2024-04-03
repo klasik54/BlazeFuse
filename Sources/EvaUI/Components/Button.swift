@@ -8,17 +8,17 @@
 import Foundation
 import SwiftHtml
 
+enum Handler {
+    
+    case trigger(any Codable)
+    case dispatch(any Event)
+    
+}
+
 struct Button<Label: View>: View, HTMLRepresentable {
     
     let label: Label
     let handler: Handler
-    
-    enum Handler {
-        
-        case trigger(any Codable)
-        case dispatch(any Event)
-        
-    }
     
     init(onClick: Handler, @ViewBuilder label: () -> Label) {
         self.label = label()

@@ -10,7 +10,7 @@ import Foundation
 struct HelloView: View {
  
     var props: Props
-    @State var state = Data()
+    // @State var state = Data()
     
     struct Props: Codable {}
     struct Data: Codable {

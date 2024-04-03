@@ -48,6 +48,10 @@ enum Entrypoint {
             return CounterView(props: .init())
         }
         
+        app.router.get("inputs") { request in
+            return InputsView()
+        }
+        
         app.router.get("hello") { request -> String in
             return "Now"
         }
