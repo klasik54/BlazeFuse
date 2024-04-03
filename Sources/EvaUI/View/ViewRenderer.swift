@@ -22,15 +22,24 @@ final class ViewRenderer {
                         .src("https://cdn.tailwindcss.com")
                     
                     Script()
-                        .src("https://unpkg.com/htmx.org@1.9.10")
-                        .integrity("sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC")
+                        .src("https://unpkg.com/htmx.org@1.9.11")
+                        .integrity("sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0")
                         .crossorigin(.anonymous)
+                    
+                    Script()
+                        .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
+                    
+                
+                    
                     Meta()
                         .charset("UTF-8")
                 }
                 
                 Body {
                     tagFrom(view: view)
+                    
+                    Script()
+                        .src("http://localhost:8080/script.js")
                 }
             }
         }
@@ -40,9 +49,9 @@ final class ViewRenderer {
         return html
     }
     
-    func renderComponent(_ view: some View) -> String {
+    func renderComponent(_ view: some View, childrenStates: [String: Foundation.Data]) -> String {
         let document = Document(.html) {
-            tagFrom(view: view)
+            tagFrom(view: view, childrenStates: childrenStates)
         }
         let html = DocumentRenderer().render(document)
         
@@ -55,23 +64,38 @@ final class ViewRenderer {
 
 private extension ViewRenderer {
     
-    func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = []) -> Tag {
-        if let stateFullView = view as? any StatefulView {
-            StatefulViewRepository.shared.registerStateFullView(view: stateFullView)
-            return tagFrom(view: stateFullView.wrapper, viewModifiers: viewModifiers)
+    func updateComponentState<T: ComponentType>(component: T, from data: Foundation.Data) -> some View {
+        let state = try! JSONDecoder().decode(T.State.self, from: data)
+        return component.wrapper(state: state)
+    }
+    
+    func getDetaultComponent<T: ComponentType>(component: T) -> some View {
+        component.wrapper(state: component.onMount(props: component.getCurrentProps()))
+    }
+    
+    func tagFrom<T: View>(view: T, viewModifiers: [any ViewModifier] = [], childrenStates: [String: Foundation.Data] = [:]) -> Tag {
+        if let component = view as? any ComponentType {
+            if let componentState = childrenStates[component.getId()] {
+                let wrapper = updateComponentState(component: component, from: componentState)
+                return tagFrom(view: wrapper, viewModifiers: viewModifiers, childrenStates: childrenStates)
+            } else {
+                let wrapper = getDetaultComponent(component: component)
+                return tagFrom(view: wrapper, viewModifiers: viewModifiers, childrenStates: childrenStates)
+            }
         } else if let modifedContent = view as? AnyModifiedContent,
             let viewModifier = modifedContent.anyModifier as? ViewModifier {
-            return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier])
+            return tagFrom(view: view.body, viewModifiers: viewModifiers + [viewModifier], childrenStates: childrenStates)
         } else if let htmlRepresentable = view as? any HTMLRepresentable & View {
-            return renderHTMLRepresentableView(view: htmlRepresentable, viewModifiers: viewModifiers)
+            return renderHTMLRepresentableView(view: htmlRepresentable, viewModifiers: viewModifiers, childrenStates: childrenStates)
         } else {
-            return tagFrom(view: view.body, viewModifiers: viewModifiers)
+            return tagFrom(view: view.body, viewModifiers: viewModifiers, childrenStates: childrenStates)
         }
     }
     
     func renderHTMLRepresentableView<T: View & HTMLRepresentable>(
         view: T,
-        viewModifiers: [any ViewModifier]
+        viewModifiers: [any ViewModifier],
+        childrenStates: [String: Foundation.Data] = [:]
     ) -> Tag {
         var children: [Tag] = []
 
@@ -82,7 +106,7 @@ private extension ViewRenderer {
                 []
             }
 
-            let childTag = tagFrom(view: childView, viewModifiers: passedViewModifiers)
+            let childTag = tagFrom(view: childView, viewModifiers: passedViewModifiers, childrenStates: childrenStates)
             
             if childTag.node.type == .group {
                 children.append(contentsOf: childTag.children)

@@ -8,20 +8,21 @@
 import Foundation
 import SwiftHtml
 
-struct Button<Label: View>: View, Identifiable, HasAction, HTMLRepresentable {
+struct Button<Label: View>: View, HTMLRepresentable {
     
-    let id: String
     let label: Label
-    let action: () -> Void
+    let handler: Handler
     
-    init(file: String = #file, line: Int = #line, action: @escaping () -> Void, @ViewBuilder label: () -> Label) {
-        var hasher = Hasher()
-        hasher.combine(file)
-        hasher.combine(line)
+    enum Handler {
         
-        self.id = hasher.finalize().description
+        case trigger(any Codable)
+        case dispatch(any Event)
+        
+    }
+    
+    init(onClick: Handler, @ViewBuilder label: () -> Label) {
         self.label = label()
-        self.action = action
+        self.handler = onClick
     }
     
     var body: some View {
@@ -32,13 +33,38 @@ struct Button<Label: View>: View, Identifiable, HasAction, HTMLRepresentable {
         [label]
     }
     
+    var encodedAction: String {
+        switch handler {
+        case .trigger(let action):
+            let data = try! JSONEncoder().encode(action)
+            return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+
+        case .dispatch(let event):
+            let data = try! JSONEncoder().encode(event)
+            return String(data: data, encoding: .utf8)!.replacingOccurrences(of: #"""#, with: #"&quot;"#)
+        }
+    }
+    
     var htmlTag: Tag {
-        SwiftHtml.Button()
-            .attribute("hx-post", "/eva?triggerId=\(id)")
-            .attribute("hx-include", "[name='data']")
-            .attribute("hx-target", ".component")
-            .attribute("hx-swap", "outerHTML")
-            .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+        switch handler {
+        case .trigger:
+            SwiftHtml.Button()
+                .attribute("data-node-type", "trigger")
+                .attribute("data-action-data", encodedAction)
+                .attribute("hx-disinherit", "*")
+                .attribute("hx-post", "/fuse/action")
+                .attribute("hx-ext", "json-enc")
+                .attribute("hx-target", "closest [data-node-type='component']")
+                .attribute("hx-swap", "outerHTML")
+                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+
+        case .dispatch(let event):
+            SwiftHtml.Button()
+                .attribute("data-node-type", "dispatcher")
+                .attribute("data-event-name", type(of: event).identifier)
+                .attribute("data-event-data", encodedAction)
+                .class("rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600")
+        }
     }
     
 }

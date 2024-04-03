@@ -14,6 +14,7 @@ import Foundation
 enum Entrypoint {
     
     static func main() async throws {
+//        ComponentsRegister.shared.register(NewStateView())
         let app = HBApplication(configuration: .init(address: .hostname(
             env("SERVER_HOST", defaultValue: "127.0.0.1"),
             port: env("SERVER_PORT", defaultValue: 8080)
@@ -34,16 +35,18 @@ enum Entrypoint {
         try await app.fluent.migrate()
 
         app.middleware.add(FileMiddleware())
+
+        app.router.post("fuse/action", use: fuseActionRouteHandler)
+        app.router.post("fuse/event", use: fuseEventRouteHandler)
+
         
         app.router.get("") { request in
             return HelloView(props: .init())
         }
         
-        app.router.get("counter") { request in
+        app.router.get("counter") { requst in
             return CounterView(props: .init())
         }
-        
-        app.router.post("eva", use: evaUIRouteHandler)
         
         app.router.get("hello") { request -> String in
             return "Now"
