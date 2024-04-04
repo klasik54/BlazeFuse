@@ -23,17 +23,10 @@ extension StateType {
     
     func bind<Value>(
         _ property: KeyPath<Self, Value>
-    ) -> FooBar<Self, Value> {
+    ) -> Binding<Value> {
         let value = self[keyPath: property]
-        return FooBar(keyPath: property, value: value)
+        return Binding(name: property.debugDescription.replacingOccurrences(of: #"\State."#, with: ""), value: value)
     }
-    
-}
-
-struct FooBar<Object, Value> {
-    
-    let keyPath: KeyPath<Object, Value>
-    let value: Value
     
 }
 
@@ -131,8 +124,6 @@ final class CounterView: Component<CounterView.Props> {
             if let helloText = state.helloText {
                 Text("Parent said: \(helloText)")
             }
-            
-            TextField("Hello", text: state.bind(\.text))
 
             if state.count > 10 {
                 Text("🎉 Count is greater than 10")

@@ -11,6 +11,6 @@ struct UpdateComponentRequest<T: ComponentType>: Decodable {
     
     let props: T.Props
     let state: T.State
-    let action: T.Action
+    let action: T.Action?
     
 }

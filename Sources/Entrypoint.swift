@@ -49,7 +49,7 @@ enum Entrypoint {
         }
         
         app.router.get("inputs") { request in
-            return InputsView()
+            return InputsView(props: .init())
         }
         
         app.router.get("hello") { request -> String in

@@ -27,9 +27,10 @@ final class ViewRenderer {
                         .crossorigin(.anonymous)
                     
                     Script()
-                        .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
+                        .src("https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js")
                     
-                
+                    Script()
+                        .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
                     
                     Meta()
                         .charset("UTF-8")

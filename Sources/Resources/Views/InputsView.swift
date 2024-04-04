@@ -7,16 +7,59 @@
 
 import Foundation
 
-struct InputsView: View {
+struct User: Codable {
+    
+    var firstName: String
+    var lastName: String
+    var age: String
+    
+}
+
+final class InputsView: Component<InputsView.Props> {
+
+    struct Props: Codable {}
+    
+    struct State: StateType {
+        
+        var user: User
+        
+    }
+    
+    enum Action: Codable {
+        
+        case updateFirstName(String)
+        case updateLastName(String)
+        case updateHello(String)
+        
+    }
+    
+    func onMount(props: Props) -> State {
+        State(user: User(firstName: "", lastName: "", age: "12"))
+    }
+    
+    func mutate(props: Props, state: State, action: Action) async -> State {
+        return state
+    }
+    
+    func render(props: Props, state: State) -> some View {
+        VStack {
+            Text("👋 Hello: \(state.user.firstName) \(state.user.lastName)")
+            TextField("Name", text: state.bind(\.user.firstName))
+            TextField("Last name", text: state.bind(\.user.lastName))
+            TextChild(text: state.bind(\.user.age))
+            
+            Text("You are: \(state.user.age) years old :)")
+        }
+    }
+    
+}
+
+struct TextChild: View {
+    
+    @Binding var text: String
     
     var body: some View {
-        VStack {
-//            TextField("Name", name: "firstName")
-//            TextField("Last name", name: "lastName")
-//            TextField("Hello", name: "hello")
-            // TextField("Age", text: <#T##KeyPath<Decodable & Encodable, String>#>)
-            // TextField(<#T##placeholder: String##String#>, value: <#T##String#>, onChange: .trigger(<#T##Codable#>))
-        }
+        TextField("Age", text: $text)
     }
     
 }
