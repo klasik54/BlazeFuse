@@ -57,6 +57,7 @@ document.body.addEventListener('htmx:configRequest', function (event) {
 
 document.body.addEventListener("htmx:afterSwap", function(event) {
     registerEventDispatchersOn(event.target)
+    setTextAreaHeight(event)
 })
 
 function onMount() {
@@ -178,4 +179,12 @@ function put(obj, path, val) {
             current = current[key];
         }
     });
+}
+
+function setTextAreaHeight(event) {
+    const textAreas = event.target.querySelectorAll("textarea")
+    
+    for (const textArea of textAreas) {
+        textArea.parentNode.dataset.replicatedValue = textArea.value
+    }
 }

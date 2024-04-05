@@ -31,11 +31,41 @@ struct TextEditor: View, HTMLRepresentable {
     }
     
     var htmlTag: SwiftHtml.Tag {
+        return Div().class("grow-wrap")
+    }
+    
+    var children: [any View] {
+        [TextArea(placeholder: placeholder, name: name, value: value)]
+    }
+    
+}
+
+
+private struct TextArea: View, HTMLRepresentable {
+    
+    private let placeholder: String
+    private let name: String
+    private let value: String?
+    
+    init(placeholder: String, name: String, value: String?) {
+        self.placeholder = placeholder
+        self.name = name
+        self.value = value
+    }
+    
+    var body: some View {
+        NeverView()
+    }
+    
+    var children: [any View] = []
+    
+    var htmlTag: SwiftHtml.Tag {
         let textArea = Textarea(value)
             .attribute("data-node-type", "input")
             .attribute("placeholder", placeholder)
             .attribute("hx-post", "/fuse/action")
             .attribute("name", name)
+            .attribute("onInput", "this.parentNode.dataset.replicatedValue = this.value")
         
         if value != nil{
             textArea
@@ -46,10 +76,6 @@ struct TextEditor: View, HTMLRepresentable {
         }
         
         return textArea
-    }
-    
-    var children: [any View] {
-        []
     }
     
 }

@@ -32,6 +32,9 @@ final class ViewRenderer {
                     Script()
                         .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
                     
+                    SwiftHtml.Link(rel: .stylesheet)
+                        .href("http://localhost:8080/style.css")
+                    
                     Meta()
                         .charset("UTF-8")
                 }
