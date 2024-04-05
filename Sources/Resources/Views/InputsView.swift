@@ -22,6 +22,7 @@ final class InputsView: Component<InputsView.Props> {
     struct State: StateType {
         
         var user: User
+        var note: String
         
     }
     
@@ -34,7 +35,7 @@ final class InputsView: Component<InputsView.Props> {
     }
     
     func onMount(props: Props) -> State {
-        State(user: User(firstName: "", lastName: "", age: "12"))
+        State(user: User(firstName: "", lastName: "", age: "12"), note: "")
     }
     
     func mutate(props: Props, state: State, action: Action) async -> State {
@@ -47,8 +48,10 @@ final class InputsView: Component<InputsView.Props> {
             TextField("Name", text: state.bind(\.user.firstName))
             TextField("Last name", text: state.bind(\.user.lastName))
             TextChild(text: state.bind(\.user.age))
+            TextEditor("Write your note...", text: state.bind(\.note))
             
             Text("You are: \(state.user.age) years old :)")
+            Text("Your note: \(state.note)")
         }
     }
     
