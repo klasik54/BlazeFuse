@@ -1,6 +1,6 @@
 # Blaze fuse
 
-This is a fun project which i build trying to replicate some feature from the PHP framework Laravel and learn new things about web development and swift. This project is not meant to be run in production!!. Here i some feature i tried to replicate.
+This is a fun project which i build trying to replicate some feature from the PHP framework [Laravel](https://laravel.com/) and learn new things about web development and swift. This project is not meant to be run in production!!. Here i some feature i tried to replicate.
 
 ## Storage
 
