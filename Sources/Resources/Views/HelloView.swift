@@ -29,6 +29,7 @@ struct HelloView: View {
     }
     
     private let examples: [Example] = [
+        Example(title: "Simple counter", href: "/simple-counter"),
         Example(title: "Counter", href: "/counter"),
         Example(title: "Inputs", href: "/inputs"),
     ]
