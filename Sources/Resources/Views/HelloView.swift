@@ -30,7 +30,7 @@ struct HelloView: View {
     
     private let examples: [Example] = [
         Example(title: "Counter", href: "/counter"),
-        Example(title: "Text", href: "/text"),
+        Example(title: "Inputs", href: "/inputs"),
     ]
     
     var body: some View {
