@@ -36,11 +36,15 @@ fileprivate func getComponent<T: ComponentType>(from anyComponentType: T.Type, c
     let updateRequest = try request.decode(as: UpdateComponentRequest<T>.self)
     let component = anyComponentType.init(id: componentId, props: updateRequest.props)
     
-    let mutatedState = await component.mutate(
-        props: updateRequest.props,
-        state: updateRequest.state,
-        action: updateRequest.action
-    )
+    if let action = updateRequest.action {
+        let mutatedState = await component.mutate(
+            props: updateRequest.props,
+            state: updateRequest.state,
+            action: action
+        )
+        
+        return component.wrapper(state: mutatedState)
+    }
     
-    return component.wrapper(state: mutatedState)
+    return component.wrapper(state: updateRequest.state)
 }

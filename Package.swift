@@ -10,12 +10,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", .upToNextMajor(from: "1.11.0")),
-        // .package(url: "https://github.com/binarybirds/swift-html", from: "1.6.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird-fluent.git", .upToNextMajor(from: "1.1.0")),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.7.2"),
         .package(url: "https://github.com/vapor/multipart-kit.git", from: "4.0.0"),
-//        .package(url: "../swift-html", branch: "main"),
-        .package(path: "../swift-html")
+        .package(url: "https://github.com/klasik54/swift-html", branch: "main")
     ],
     targets: [
         .executableTarget(

@@ -15,6 +15,21 @@ struct FooEvent: Event {
     
 }
 
+protocol StateType: Codable {
+    
+}
+
+extension StateType {
+    
+    func bind<Value>(
+        _ property: KeyPath<Self, Value>
+    ) -> Binding<Value> {
+        let value = self[keyPath: property]
+        return Binding(name: property.debugDescription.replacingOccurrences(of: #"\State."#, with: ""), value: value)
+    }
+    
+}
+
 final class CounterView: Component<CounterView.Props> {
     
     enum Action: Codable {
@@ -27,10 +42,11 @@ final class CounterView: Component<CounterView.Props> {
     
     struct Props: Codable {}
     
-    struct State: Codable {
+    struct State: StateType {
         
         var count: Int
         var helloText: String? = nil
+        var text: String = ""
         
     }
     
@@ -108,7 +124,6 @@ final class CounterView: Component<CounterView.Props> {
             if let helloText = state.helloText {
                 Text("Parent said: \(helloText)")
             }
-                
 
             if state.count > 10 {
                 Text("🎉 Count is greater than 10")

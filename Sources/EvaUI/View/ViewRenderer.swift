@@ -27,9 +27,13 @@ final class ViewRenderer {
                         .crossorigin(.anonymous)
                     
                     Script()
+                        .src("https://unpkg.com/idiomorph/dist/idiomorph-ext.min.js")
+                    
+                    Script()
                         .src("https://unpkg.com/htmx.org/dist/ext/json-enc.js")
                     
-                
+                    SwiftHtml.Link(rel: .stylesheet)
+                        .href("http://localhost:8080/style.css")
                     
                     Meta()
                         .charset("UTF-8")
