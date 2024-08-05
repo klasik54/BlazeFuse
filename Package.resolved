@@ -145,6 +145,15 @@
       }
     },
     {
+      "identity" : "swift-html",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/klasik54/swift-html",
+      "state" : {
+        "branch" : "main",
+        "revision" : "00acfd00369781c559423b6042205ba9d5c10a35"
+      }
+    },
+    {
       "identity" : "swift-http-types",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-http-types",
